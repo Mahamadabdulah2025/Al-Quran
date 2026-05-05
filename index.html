@@ -1,516 +1,734 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0c2318">
-<title>Al-Quran — Learning Center</title>
+<meta name="description" content="Qur'an Recitation, Listening & Tajwīd Web Application">
+<title>Al-Qurʾān — Recitation & Tajwīd</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@500;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Cinzel:wght@500;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════════
-   RESET & VARIABLES
-═══════════════════════════════════════════════════════ */
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --g1:#0d5c3a;--g2:#1a7a4e;--g3:#e8f5ee;--g4:#c3e0ce;
-  --gold:#c8973a;--gold2:#f0c060;
-  --cream:#fafaf7;--dark:#0a1c12;
-  --text:#182b1e;--muted:#6b8f75;--lite:#9ab8a4;
-  --border:#daeadf;--white:#fff;
-  --sidebar:#0c2318;--s2:#102a1e;--s3:#183826;--stext:#c0e0ce;
-  --red:#c0392b;--redl:#fdf0ef;--redd:#922b21;
-  --amber:#d68910;--amberl:#fef9e7;
-  --topH:54px;--botH:60px;
+/* ══════════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES — THEME SYSTEM
+══════════════════════════════════════════════════════════════ */
+:root {
+  /* Light theme */
+  --bg:#f8f6f1;--bg2:#ffffff;--bg3:#f0ede6;
+  --sidebar-bg:#0c2318;--sidebar-bg2:#102a1e;--sidebar-bg3:#183826;
+  --sidebar-text:#c0e0ce;--sidebar-muted:#4a7060;
+  --text:#182b1e;--text2:#3a5a45;--muted:#6b8f75;--lite:#a0bfaa;
+  --border:#daeadf;--border2:#c3e0ce;
+  --g1:#0d5c3a;--g2:#1a7a4e;--g3:#e8f5ee;
+  --gold:#c8973a;--gold2:#f0c060;--gold-bg:#fdf8ef;
+  --red:#c0392b;--red-l:#fdf0ef;--red-d:#922b21;
+  --amber:#d68910;--amber-l:#fef9e7;
+  --blue:#2471a3;--blue-l:#eaf4fc;
+  --purple:#7d3c98;--purple-l:#f5eef8;
+  --teal:#117a65;--teal-l:#e8f8f5;
+  --accent:#0d5c3a;
+  --shadow:0 2px 16px rgba(13,92,58,0.10);
+  --shadow-lg:0 8px 40px rgba(13,92,58,0.15);
+  --radius-sm:6px;--radius:10px;--radius-lg:14px;--radius-xl:20px;
+  --top-h:56px;--bot-h:62px;
+  --font-ar-size:22px;
+  --font-ui:'Nunito',sans-serif;
+  --font-ar:'Amiri Quran','Amiri',serif;
 }
-html{height:100%;height:-webkit-fill-available}
-body{
-  min-height:100vh;min-height:-webkit-fill-available;
-  overflow:hidden;background:var(--cream);
-  font-family:'Nunito',sans-serif;color:var(--text);
-  display:flex;flex-direction:column;
+[data-theme="dark"] {
+  --bg:#0e1a13;--bg2:#142019;--bg3:#1a2d1e;
+  --sidebar-bg:#071410;--sidebar-bg2:#0c1d16;--sidebar-bg3:#112118;
+  --sidebar-text:#a0c8b0;--sidebar-muted:#3a5a45;
+  --text:#d4e8da;--text2:#a0c8b0;--muted:#6a9070;--lite:#3a5a45;
+  --border:#1e3a28;--border2:#1a3022;
+  --g1:#1a9c60;--g2:#22b870;--g3:#0e2818;
+  --gold:#e8b050;--gold2:#ffd060;--gold-bg:#1a1408;
+  --red:#e05040;--red-l:#1e0d0a;--red-d:#ff7060;
+  --amber:#f0a820;--amber-l:#1a1208;
+  --blue:#4a9fd4;--blue-l:#0a1a28;
+  --purple:#c060e0;--purple-l:#180c28;
+  --teal:#30d0a0;--teal-l:#081a14;
+  --shadow:0 2px 16px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.5);
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;font-size:16px;scroll-behavior:smooth}
+body{
+  min-height:100vh;overflow:hidden;
+  background:var(--bg);font-family:var(--font-ui);
+  color:var(--text);display:flex;flex-direction:column;
+  transition:background 0.3s,color 0.3s;
+}
+:focus-visible{outline:2px solid var(--g1);outline-offset:2px;border-radius:4px}
+::selection{background:var(--g3);color:var(--text)}
+button,select,input{font-family:var(--font-ui);color:inherit}
+
+/* ══════════════════════════════════════════════════════════════
+   SCROLLBARS
+══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+
+/* ══════════════════════════════════════════════════════════════
    TOP BAR
-═══════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 #topbar{
-  height:var(--topH);background:var(--sidebar);
-  display:flex;align-items:center;padding:0 14px;gap:10px;
-  flex-shrink:0;border-bottom:1px solid var(--s3);z-index:100;
-  position:relative;
+  height:var(--top-h);background:var(--sidebar-bg);
+  display:flex;align-items:center;padding:0 12px;gap:8px;
+  flex-shrink:0;border-bottom:1px solid var(--sidebar-bg3);
+  z-index:200;position:relative;
 }
 #menuBtn{
-  display:none;background:none;border:none;color:var(--stext);
-  font-size:20px;cursor:pointer;padding:6px;border-radius:6px;
-  flex-shrink:0;line-height:1;
+  display:none;background:none;border:none;color:var(--sidebar-text);
+  font-size:22px;cursor:pointer;padding:6px;border-radius:6px;
+  line-height:1;flex-shrink:0;
 }
-#menuBtn:hover{background:var(--s3)}
-.logo{font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);letter-spacing:1px;white-space:nowrap;line-height:1}
-.logo small{font-family:'Nunito',sans-serif;font-size:10px;color:var(--stext);opacity:0.65;margin-left:6px;font-weight:400}
-#activeInfo{
-  font-size:11px;color:var(--stext);opacity:0.7;
-  padding:0 10px;border-left:1px solid var(--s3);white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;max-width:160px;
+#menuBtn:hover{background:var(--sidebar-bg3)}
+.logo{
+  font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);
+  letter-spacing:0.5px;white-space:nowrap;line-height:1.1;
 }
-#langWrap{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0}
-#langWrap label{font-size:11px;color:var(--stext);opacity:0.7;white-space:nowrap}
+.logo-sub{display:block;font-family:var(--font-ui);font-size:9px;
+  color:var(--sidebar-text);opacity:0.6;font-weight:400;letter-spacing:0;margin-top:1px}
+#curSurahBadge{
+  font-size:11px;color:var(--sidebar-text);opacity:0.7;
+  padding:0 10px;border-left:1px solid var(--sidebar-bg3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;
+}
+
+/* TOP CONTROLS */
+#topControls{
+  margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;
+}
+.tc-group{display:flex;align-items:center;gap:5px;padding:0 8px;border-left:1px solid var(--sidebar-bg3)}
+.tc-group:first-child{border-left:none}
+.tc-label{font-size:9px;color:var(--sidebar-text);opacity:0.6;white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px}
+
+/* Font size slider */
+#fontSlider{
+  -webkit-appearance:none;appearance:none;width:80px;height:4px;
+  background:var(--sidebar-bg3);border-radius:2px;cursor:pointer;
+}
+#fontSlider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--gold);cursor:pointer;
+}
+#fontSlider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+
+/* Toggle buttons */
+.tog{
+  background:var(--sidebar-bg2);border:1px solid var(--sidebar-bg3);
+  color:var(--sidebar-text);padding:5px 9px;border-radius:6px;
+  font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;
+  white-space:nowrap;
+}
+.tog:hover{border-color:var(--gold);color:var(--gold2)}
+.tog.on{background:var(--gold);color:var(--dark,#0a1c12);border-color:var(--gold)}
+
+/* Lang select */
 #langSel{
-  background:var(--s2);border:1px solid var(--s3);color:var(--stext);
-  padding:5px 6px;border-radius:6px;font-size:11px;cursor:pointer;
-  font-family:'Nunito',sans-serif;max-width:140px;
+  background:var(--sidebar-bg2);border:1px solid var(--sidebar-bg3);
+  color:var(--sidebar-text);padding:5px 7px;border-radius:6px;
+  font-size:11px;cursor:pointer;max-width:130px;
 }
 #langSel:focus{outline:none;border-color:var(--gold)}
 
-/* ═══════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    LAYOUT
-═══════════════════════════════════════════════════════ */
-#layout{
-  display:flex;flex:1;overflow:hidden;
-  height:calc(100vh - var(--topH));
-}
+══════════════════════════════════════════════════════════════ */
+#layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - var(--top-h))}
 
-/* ═══════════════════════════════════════════════════════
-   SIDEBAR OVERLAY (mobile)
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   OVERLAY
+══════════════════════════════════════════════════════════════ */
 #overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
-  z-index:199;backdrop-filter:blur(2px);
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  z-index:299;backdrop-filter:blur(3px);
 }
 #overlay.show{display:block}
 
-/* ═══════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    SIDEBAR
-═══════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 #sidebar{
-  width:248px;background:var(--sidebar);display:flex;flex-direction:column;
-  flex-shrink:0;border-right:1px solid var(--s3);overflow:hidden;
-  transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
-  z-index:200;
+  width:252px;background:var(--sidebar-bg);display:flex;flex-direction:column;
+  flex-shrink:0;border-right:1px solid var(--sidebar-bg3);
+  transition:transform 0.28s cubic-bezier(.4,0,.2,1);z-index:300;
 }
-#sHead{padding:10px;border-bottom:1px solid var(--s3);flex-shrink:0;display:flex;gap:8px;align-items:center}
+#sHead{
+  padding:10px;border-bottom:1px solid var(--sidebar-bg3);
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+}
 #closeBtn{
-  display:none;background:none;border:none;color:var(--stext);
-  font-size:18px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;border-radius:4px;
+  display:none;background:none;border:none;color:var(--sidebar-text);
+  font-size:18px;cursor:pointer;padding:4px;border-radius:4px;flex-shrink:0;
 }
-#closeBtn:hover{background:var(--s3)}
-#sHead input{
-  flex:1;background:var(--s2);border:1px solid var(--s3);
-  color:var(--stext);padding:7px 10px;border-radius:7px;font-size:12px;
-  font-family:'Nunito',sans-serif;min-width:0;
+#closeBtn:hover{background:var(--sidebar-bg3)}
+#sSearch{
+  flex:1;background:var(--sidebar-bg2);border:1px solid var(--sidebar-bg3);
+  color:var(--sidebar-text);padding:7px 10px;border-radius:7px;
+  font-size:12px;min-width:0;
 }
-#sHead input::placeholder{color:#4a7060}
-#sHead input:focus{outline:none;border-color:var(--gold);background:var(--s3)}
-#sList{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--s3) transparent;-webkit-overflow-scrolling:touch}
-#sList::-webkit-scrollbar{width:3px}
-#sList::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+#sSearch::placeholder{color:var(--sidebar-muted)}
+#sSearch:focus{outline:none;border-color:var(--gold);background:var(--sidebar-bg3)}
+#sList{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
 .si{
-  display:flex;align-items:center;gap:9px;padding:8px 10px;cursor:pointer;
-  transition:background 0.12s;border-left:3px solid transparent;
-  user-select:none;
+  display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;
+  transition:background 0.1s;border-left:3px solid transparent;user-select:none;
 }
-.si:hover,.si:active{background:var(--s2)}
-.si.active{background:rgba(200,151,58,0.1);border-left-color:var(--gold)}
-.sn{
+.si:hover{background:var(--sidebar-bg2)}
+.si.active{background:rgba(200,151,58,0.12);border-left-color:var(--gold)}
+.si-num{
   width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.06);
-  color:var(--stext);font-size:10px;font-weight:600;display:flex;
-  align-items:center;justify-content:center;flex-shrink:0;
+  color:var(--sidebar-text);font-size:10px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.si.active .sn{background:var(--gold);color:var(--dark)}
-.sinfo{flex:1;min-width:0}
-.sname{font-size:12px;font-weight:500;color:var(--stext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.si.active .sname{color:var(--gold2)}
-.smeta{font-size:10px;color:#4a7060;margin-top:1px}
-.sar{font-size:14px;font-family:'Amiri',serif;color:#4a7060;flex-shrink:0}
-.si.active .sar{color:var(--gold);opacity:0.75}
+.si.active .si-num{background:var(--gold);color:#0a1c12}
+.si-info{flex:1;min-width:0}
+.si-name{font-size:12px;font-weight:500;color:var(--sidebar-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si.active .si-name{color:var(--gold2)}
+.si-meta{font-size:10px;color:var(--sidebar-muted);margin-top:1px}
+.si-ar{font-size:14px;font-family:var(--font-ar);color:var(--sidebar-muted);flex-shrink:0;line-height:1}
+.si.active .si-ar{color:var(--gold);opacity:0.8}
 
-/* ═══════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    MAIN
-═══════════════════════════════════════════════════════ */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--cream);min-width:0}
+══════════════════════════════════════════════════════════════ */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0}
 
-/* WELCOME */
+/* ══════════════════════════════════════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════════════════════════════════════ */
 #welcome{
   flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:14px;padding:32px 20px;text-align:center;overflow-y:auto;
+  justify-content:center;gap:16px;padding:32px 20px;text-align:center;overflow-y:auto;
 }
-.wico{
-  width:64px;height:64px;border-radius:50%;
+.w-icon{
+  width:72px;height:72px;border-radius:50%;
   background:linear-gradient(135deg,var(--g1),var(--g2));
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  box-shadow:0 6px 28px rgba(13,92,58,0.28);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:30px;
+  box-shadow:var(--shadow-lg);flex-shrink:0;
 }
-.wtitle{font-family:'Cinzel',serif;font-size:20px;color:var(--g1);letter-spacing:1px}
-.wsub{font-size:13px;color:var(--muted);max-width:280px;line-height:1.7}
-.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;width:100%;max-width:340px}
-.wcard{
-  padding:12px 10px;background:var(--white);border:1px solid var(--border);
-  border-radius:10px;text-align:left;
+.w-title{font-family:'Cinzel',serif;font-size:22px;color:var(--g1);letter-spacing:1px}
+.w-sub{font-size:13px;color:var(--muted);max-width:300px;line-height:1.7}
+.w-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:360px;margin-top:4px}
+.w-feat{
+  padding:12px 10px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);text-align:left;transition:transform 0.2s,box-shadow 0.2s;
 }
-.wcard .wi{font-size:18px;margin-bottom:4px}
-.wcard .wt{font-size:12px;font-weight:700;color:var(--g1)}
-.wcard .wd{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
-.wbtn{
+.w-feat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.w-feat .fi{font-size:20px;margin-bottom:4px}
+.w-feat .ft{font-size:12px;font-weight:700;color:var(--g1)}
+.w-feat .fd{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.w-btn{
   padding:12px 24px;background:var(--g1);color:white;border:none;
-  border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
-  font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:8px;
+  border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;
 }
-.wbtn:hover{background:var(--g2)}
+.w-btn:hover{background:var(--g2)}
 
-/* SURAH VIEW */
+/* ══════════════════════════════════════════════════════════════
+   SURAH VIEW
+══════════════════════════════════════════════════════════════ */
 #view{display:none;flex:1;flex-direction:column;overflow:hidden}
 #hdr{
-  padding:10px 16px;border-bottom:1px solid var(--border);
+  padding:10px 18px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;background:var(--white);
+  flex-shrink:0;background:var(--bg2);gap:10px;
 }
-.hn{font-size:15px;font-weight:700;color:var(--g1)}
-.hm{font-size:11px;color:var(--muted);margin-top:1px}
-.har{font-size:26px;font-family:'Amiri',serif;color:var(--lite)}
+#hdr-left .hn{font-size:16px;font-weight:700;color:var(--g1)}
+#hdr-left .hm{font-size:11px;color:var(--muted);margin-top:1px}
+#hdr-ar{font-size:26px;font-family:var(--font-ar);color:var(--lite);line-height:1}
 
 /* TABS */
 #tabs{
-  display:flex;border-bottom:1px solid var(--border);
-  padding:0 12px;flex-shrink:0;background:var(--white);
-  overflow-x:auto;scrollbar-width:none;
+  display:flex;border-bottom:1px solid var(--border);padding:0 14px;
+  flex-shrink:0;background:var(--bg2);overflow-x:auto;scrollbar-width:none;
 }
 #tabs::-webkit-scrollbar{display:none}
 .tb{
-  padding:9px 12px;border:none;background:none;cursor:pointer;font-size:12px;
-  font-weight:500;color:var(--muted);border-bottom:2px solid transparent;
-  margin-bottom:-1px;font-family:'Nunito',sans-serif;transition:all 0.15s;
-  white-space:nowrap;flex-shrink:0;
+  padding:9px 13px;border:none;background:none;cursor:pointer;
+  font-size:12px;font-weight:500;color:var(--muted);
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  white-space:nowrap;flex-shrink:0;transition:all 0.15s;
 }
 .tb:hover{color:var(--g1)}
 .tb.on{color:var(--g1);border-bottom-color:var(--g1);font-weight:700}
 
-/* CONTENT AREA */
+/* CONTENT */
 #content{
-  flex:1;overflow-y:auto;padding:14px 16px;
-  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-  -webkit-overflow-scrolling:touch;
+  flex:1;overflow-y:auto;padding:16px 18px;-webkit-overflow-scrolling:touch;
 }
-#content::-webkit-scrollbar{width:4px}
-#content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-/* BOTTOM NAV (mobile only, hidden by default) */
+/* ══════════════════════════════════════════════════════════════
+   BOTTOM NAV (mobile only)
+══════════════════════════════════════════════════════════════ */
 #botNav{
-  display:none;height:var(--botH);background:var(--white);
+  display:none;height:var(--bot-h);background:var(--bg2);
   border-top:1px solid var(--border);flex-shrink:0;
-  grid-template-columns:repeat(4,1fr);z-index:50;
+  grid-template-columns:repeat(4,1fr);z-index:100;
 }
 .bn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;border:none;background:none;cursor:pointer;padding:8px 4px;
-  font-family:'Nunito',sans-serif;transition:all 0.15s;
+  gap:2px;border:none;background:none;cursor:pointer;padding:8px 4px;
+  transition:all 0.15s;
 }
-.bn .bi{font-size:18px;line-height:1}
+.bn:disabled{opacity:0.35;cursor:not-allowed}
+.bn .bi{font-size:20px;line-height:1}
 .bn .bl{font-size:10px;font-weight:600;color:var(--muted)}
 .bn.on .bl{color:var(--g1)}
-.bn.on .bi{filter:drop-shadow(0 0 3px rgba(13,92,58,0.4))}
 
-/* ═══════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    SHARED COMPONENTS
-═══════════════════════════════════════════════════════ */
-.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
-.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:0.3px}
-.badge.g{background:var(--g3);color:var(--g1)}
-.badge.r{background:var(--redl);color:var(--red)}
-.badge.a{background:var(--amberl);color:var(--amber)}
-.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g1);margin-bottom:8px}
+══════════════════════════════════════════════════════════════ */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
+.sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g1);margin-bottom:8px}
+.badge{
+  display:inline-flex;align-items:center;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:4px;letter-spacing:0.3px;
+}
+.badge-g{background:var(--g3);color:var(--g1)}
+.badge-r{background:var(--red-l);color:var(--red)}
+.badge-a{background:var(--amber-l);color:var(--amber)}
+.badge-b{background:var(--blue-l);color:var(--blue)}
+.badge-p{background:var(--purple-l);color:var(--purple)}
+
+/* LOADING */
+.loading-box{text-align:center;padding:60px 20px}
+.spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--g1);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-box p{font-size:13px;color:var(--muted)}
+.err-box{padding:28px 20px;background:var(--red-l);border:1px solid var(--border);border-radius:var(--radius-lg);margin:16px 0;text-align:center}
+.err-box p{font-size:13px;color:var(--red);margin-bottom:8px}
+.err-box small{font-size:11px;color:var(--muted);display:block;margin-bottom:12px}
 
 /* BUTTONS */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:9px 16px;border-radius:8px;font-size:12px;font-weight:600;
-  cursor:pointer;transition:all 0.15s;font-family:'Nunito',sans-serif;border:none;
+  padding:9px 18px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;border:none;
   -webkit-appearance:none;touch-action:manipulation;
 }
-.btn:disabled{opacity:0.4;cursor:not-allowed!important}
+.btn:disabled{opacity:0.4;cursor:not-allowed!important;transform:none!important}
 .btn-p{background:var(--g1);color:white}.btn-p:hover:not(:disabled){background:var(--g2)}
 .btn-o{background:transparent;border:1px solid var(--g1);color:var(--g1)}.btn-o:hover:not(:disabled){background:var(--g3)}
-.btn-gr{background:transparent;border:1px solid var(--border);color:var(--muted)}.btn-gr:hover:not(:disabled){border-color:var(--g1);color:var(--g1)}
-.btn-go{background:var(--gold);color:var(--dark)}.btn-go:hover:not(:disabled){background:var(--gold2)}
-.btn-re{background:var(--red);color:white}.btn-re:hover:not(:disabled){background:var(--redd)}
-.btn-sm{padding:6px 10px;font-size:11px}
-.btn-lg{padding:12px 24px;font-size:13px}
+.btn-g{background:transparent;border:1px solid var(--border);color:var(--muted)}.btn-g:hover:not(:disabled){border-color:var(--g1);color:var(--g1)}
+.btn-go{background:var(--gold);color:#0a1c12}.btn-go:hover:not(:disabled){background:var(--gold2)}
+.btn-r{background:var(--red);color:white}.btn-r:hover:not(:disabled){background:var(--red-d)}
+.btn-sm{padding:6px 11px;font-size:11px}
+.btn-lg{padding:13px 26px;font-size:13px}
 .btn-full{width:100%}
+.btn-icon{padding:7px;border-radius:6px}
 
-/* LOADING / ERROR */
-.loading-box{text-align:center;padding:50px 20px}
-.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--g1);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-box p{font-size:13px;color:var(--muted)}
-.err-box{text-align:center;padding:32px 20px;background:var(--redl);border:1px solid #f5c6c6;border-radius:12px;margin:16px 0}
-.err-box p{font-size:13px;color:var(--red);margin-bottom:8px}
-.err-box small{font-size:11px;color:var(--muted);display:block;margin-bottom:12px}
+/* PROGRESS BAR */
+.prog-wrap{margin-bottom:14px}
+.prog-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.prog-info span{font-size:11px;color:var(--muted)}
+.prog-info strong{font-size:11px;font-weight:700;color:var(--g1)}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--gold));border-radius:2px;transition:width 0.4s}
 
-/* ── READ TAB ── */
+/* ══════════════════════════════════════════════════════════════
+   BISMILLAH
+══════════════════════════════════════════════════════════════ */
 .bismillah{
-  font-family:'Amiri',serif;font-size:22px;direction:rtl;text-align:center;
-  color:var(--muted);padding:14px;background:linear-gradient(135deg,var(--g3),var(--white));
-  border:1px solid var(--border);border-radius:12px;margin-bottom:14px;line-height:2;
+  font-family:var(--font-ar);font-size:calc(var(--font-ar-size) + 4px);
+  direction:rtl;text-align:center;color:var(--text2);
+  padding:16px;background:linear-gradient(135deg,var(--g3),var(--bg2));
+  border:1px solid var(--border2);border-radius:var(--radius-lg);
+  margin-bottom:16px;line-height:2.2;
+  user-select:text;-webkit-user-select:text;
+  transition:font-size 0.2s;
 }
-.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:5px}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--gold));border-radius:2px;transition:width 0.3s}
-.ayah-card{
-  background:var(--white);border:1px solid var(--border);border-radius:12px;
-  padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;
-}
-.ayah-card:hover,.ayah-card:active{border-color:var(--g4);box-shadow:0 2px 12px rgba(13,92,58,0.07)}
-.ayah-card.cur{border-color:var(--g1);box-shadow:0 2px 16px rgba(13,92,58,0.12)}
-.ayah-num{
-  width:26px;height:26px;border-radius:50%;background:var(--g3);color:var(--g1);
-  font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;
-}
-.ayah-ar{font-family:'Amiri',serif;font-size:20px;direction:rtl;text-align:right;line-height:2.3;color:var(--text)}
-.ayah-tr{font-size:13px;color:#3a5a45;line-height:1.8;margin-top:10px;padding-top:10px;border-top:1px solid var(--g3)}
-.ayah-tr-ur{font-family:'Amiri',serif;direction:rtl;text-align:right;font-size:15px}
-.ayah-tr-zh,.ayah-tr-ar,.ayah-tr-fa{direction:rtl;text-align:right}
+[data-theme="dark"] .bismillah{background:linear-gradient(135deg,var(--g3),var(--bg3))}
 
-/* ── LISTEN TAB ── */
-.now-card{
-  background:linear-gradient(135deg,#0c2318,#183826);border-radius:14px;
-  padding:18px 20px;margin-bottom:14px;color:white;
+/* ══════════════════════════════════════════════════════════════
+   READ TAB — AYAH CARDS
+══════════════════════════════════════════════════════════════ */
+.ayah-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;
 }
-.now-ar{font-family:'Amiri',serif;font-size:24px;direction:rtl;text-align:right;line-height:2.4;color:white}
-.now-tr{font-size:13px;color:rgba(255,255,255,0.68);line-height:1.8;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)}
+.ayah-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.ayah-card.cur{border-color:var(--g1);box-shadow:var(--shadow)}
+.ayah-badge{
+  width:28px;height:28px;border-radius:50%;background:var(--g3);color:var(--g1);
+  font-size:10px;font-weight:700;display:inline-flex;align-items:center;
+  justify-content:center;margin-bottom:8px;flex-shrink:0;
+}
+.ayah-ar{
+  font-family:var(--font-ar);font-size:var(--font-ar-size);
+  direction:rtl;text-align:right;line-height:2.4;color:var(--text);
+  user-select:text;-webkit-user-select:text;
+  transition:font-size 0.2s;word-break:break-word;
+}
+/* Word spans for highlighting */
+.aw{transition:background 0.2s,color 0.2s;border-radius:3px;padding:0 1px}
+.aw.playing{background:rgba(200,151,58,0.35);color:var(--text)}
+[data-theme="dark"] .aw.playing{background:rgba(200,151,58,0.25)}
+.ayah-num-inline{font-size:13px;color:var(--lite);margin-right:4px}
+.ayah-tr{
+  font-size:13px;color:var(--text2);line-height:1.8;
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--g3);
+  user-select:text;-webkit-user-select:text;
+}
+.ayah-tr-rtl{direction:rtl;text-align:right}
+
+/* ══════════════════════════════════════════════════════════════
+   LISTEN TAB
+══════════════════════════════════════════════════════════════ */
+.now-playing-card{
+  background:linear-gradient(135deg,var(--sidebar-bg),var(--sidebar-bg3));
+  border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px;
+}
+.np-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.np-ar{
+  font-family:var(--font-ar);font-size:var(--font-ar-size);
+  direction:rtl;text-align:right;line-height:2.4;color:white;
+  transition:font-size 0.2s;
+}
+.np-tr{font-size:12px;color:rgba(255,255,255,0.65);line-height:1.8;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)}
+/* Audio progress */
+.audio-prog-wrap{margin:14px 0 10px}
+.audio-prog-bar{
+  width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,0.2);border-radius:2px;cursor:pointer;outline:none;
+}
+.audio-prog-bar::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
+.audio-prog-bar::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);border:none}
+.audio-time{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px}
+/* Speed control */
+.speed-btns{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.spd{
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.7);padding:4px 9px;border-radius:4px;
+  font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;
+}
+.spd:hover{background:rgba(255,255,255,0.2)}
+.spd.on{background:var(--gold);color:#0a1c12;border-color:var(--gold)}
 .ctrl-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.play-btn{
+  flex:1;padding:11px;background:var(--g1);color:white;border:none;
+  border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;
+  transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.play-btn:hover{background:var(--g2)}
+.play-btn.pause{background:var(--amber)}
 .auto-row{
   display:flex;align-items:center;gap:8px;padding:9px 12px;
-  background:var(--g3);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;flex-wrap:wrap;
+  background:var(--g3);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px;
 }
+[data-theme="dark"] .auto-row{background:var(--bg3);border-color:var(--border)}
 .auto-row label{font-size:12px;color:var(--muted);cursor:pointer}
-.mini-list .mi{
-  display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--white);
-  border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all 0.13s;
+.mini-li{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:6px;cursor:pointer;transition:all 0.13s;
 }
-.mini-list .mi:hover,.mini-list .mi:active{border-color:var(--g4);background:var(--g3)}
-.mini-list .mi.cur{border-color:var(--g1);background:var(--g3)}
-.mi-n{
+.mini-li:hover{border-color:var(--border2);background:var(--g3)}
+.mini-li.cur{border-color:var(--g1);background:var(--g3)}
+[data-theme="dark"] .mini-li:hover,[data-theme="dark"] .mini-li.cur{background:var(--bg3)}
+.mini-num{
   width:24px;height:24px;border-radius:50%;background:var(--g3);color:var(--g1);
   font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.mi.cur .mi-n{background:var(--gold);color:var(--dark)}
-.mi-ar{font-family:'Amiri',serif;font-size:15px;direction:rtl;text-align:right;flex:1;color:var(--text);line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* ── CHECK TAB ── */
-.orig-card{
-  background:var(--white);border:1px solid var(--border);border-radius:12px;
-  padding:14px 16px;margin-bottom:14px;text-align:right;direction:rtl;
+.mini-li.cur .mini-num{background:var(--gold);color:#0a1c12}
+.mini-ar{
+  font-family:var(--font-ar);font-size:14px;direction:rtl;text-align:right;
+  flex:1;color:var(--text);line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.orig-ar{font-family:'Amiri',serif;font-size:22px;line-height:2.3;color:var(--text)}
-.orig-tr{font-size:13px;color:var(--muted);line-height:1.8;margin-top:8px;padding-top:8px;border-top:1px solid var(--g3);direction:ltr;text-align:left}
+
+/* ══════════════════════════════════════════════════════════════
+   CHECK / RECORDING TAB
+══════════════════════════════════════════════════════════════ */
+.orig-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 18px;margin-bottom:14px;text-align:right;direction:rtl;
+}
+.orig-ar{font-family:var(--font-ar);font-size:var(--font-ar-size);line-height:2.4;color:var(--text);transition:font-size 0.2s}
+.orig-tr{font-size:12px;color:var(--muted);line-height:1.8;margin-top:8px;padding-top:8px;border-top:1px solid var(--g3);direction:ltr;text-align:left}
 .rec-btn{
   width:100%;padding:16px;font-size:15px;font-weight:700;border:none;
-  border-radius:12px;cursor:pointer;transition:all 0.2s;font-family:'Nunito',sans-serif;
+  border-radius:var(--radius-lg);cursor:pointer;transition:all 0.2s;
   display:flex;align-items:center;justify-content:center;gap:10px;
   -webkit-appearance:none;touch-action:manipulation;
 }
 .rec-idle{background:var(--g1);color:white}.rec-idle:hover{background:var(--g2)}
-.rec-on{background:var(--red);color:white;animation:puls 1.4s infinite}
-@keyframes puls{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4)}60%{box-shadow:0 0 0 12px rgba(192,57,43,0)}}
-.dot{width:10px;height:10px;border-radius:50%;background:white;animation:blink 1s infinite;flex-shrink:0}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-.tr-box{background:var(--g3);border:1px solid var(--g4);border-radius:10px;padding:14px 16px;margin:12px 0}
-.tr-ar{font-family:'Amiri',serif;font-size:20px;direction:rtl;text-align:right;color:var(--text);line-height:1.9}
+.rec-on{background:var(--red);color:white;animation:pulse-rec 1.4s infinite}
+@keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4)}60%{box-shadow:0 0 0 14px rgba(192,57,43,0)}}
+.rec-dot{width:10px;height:10px;border-radius:50%;background:white;animation:blink 1s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+.transcript-box{
+  background:var(--g3);border:1px solid var(--border2);border-radius:var(--radius-lg);
+  padding:14px 16px;margin:12px 0;
+}
+[data-theme="dark"] .transcript-box{background:var(--bg3);border-color:var(--border)}
+.transcript-ar{font-family:var(--font-ar);font-size:var(--font-ar-size);direction:rtl;text-align:right;color:var(--text);line-height:2.0}
+
+/* 4-level feedback */
+.level-box{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+  margin-bottom:10px;overflow:hidden;
+}
+.level-hdr{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  cursor:pointer;user-select:none;transition:background 0.15s;
+}
+.level-hdr:hover{background:var(--bg3)}
+.level-icon{font-size:18px;flex-shrink:0}
+.level-title{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.level-score{
+  width:40px;height:40px;border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:white;
+}
+.level-chevron{font-size:12px;color:var(--muted);transition:transform 0.2s}
+.level-hdr.open .level-chevron{transform:rotate(180deg)}
+.level-body{display:none;padding:0 14px 12px;border-top:1px solid var(--border)}
+.level-body.show{display:block}
+.level-item{padding:8px 0;border-bottom:1px solid var(--g3);font-size:12px;line-height:1.6}
+.level-item:last-child{border-bottom:none}
+.level-item strong{color:var(--text);font-weight:600}
+.level-item .fix{color:var(--g1);font-size:11px;margin-top:2px}
+
+/* Score ring */
 .score-ring{
-  width:66px;height:66px;border-radius:50%;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;flex-shrink:0;border:3px solid rgba(255,255,255,0.3);
+  width:70px;height:70px;border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;flex-shrink:0;
+  border:3px solid rgba(255,255,255,0.3);
 }
 .correct-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.cp{font-family:'Amiri',serif;font-size:14px;direction:rtl;padding:3px 10px;border-radius:6px;background:var(--g3);color:var(--g1);font-weight:700}
-.mistake-item{padding:10px 0;border-bottom:1px solid var(--g3)}
-.mistake-item:last-child{border-bottom:none}
-.sel-row{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.sel-row select{font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif;max-width:160px}
-
-/* ═══════════════════════════════════════════════════════
-   RESPONSIVE — TABLET 640–1024px
-═══════════════════════════════════════════════════════ */
-@media(max-width:1023px){
-  #sidebar{width:220px}
-  .logo small{display:none}
-  #activeInfo{max-width:120px;padding:0 8px}
-  #langWrap label{display:none}
-  #langSel{max-width:120px}
+.cp{
+  font-family:var(--font-ar);font-size:15px;direction:rtl;
+  padding:3px 10px;border-radius:6px;background:var(--g3);color:var(--g1);font-weight:700;
 }
 
-/* ═══════════════════════════════════════════════════════
-   RESPONSIVE — MOBILE < 640px
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   TAJWEED VISUALIZATION
+══════════════════════════════════════════════════════════════ */
+/* 13 Tajweed color classes */
+.tj-qalqalah{color:#e67e22!important;border-bottom:2px dotted #e67e22}
+.tj-ghunnah{color:#9b59b6!important;border-bottom:2px solid #9b59b6}
+.tj-ikhfa{color:#3498db!important}
+.tj-idgham-g{color:#27ae60!important;border-bottom:2px solid #27ae60}
+.tj-idgham-ng{color:#16a085!important}
+.tj-iqlab{color:#e74c3c!important;border-bottom:2px dashed #e74c3c}
+.tj-izhar{color:#d4ac0d!important}
+.tj-madd-t{color:#1abc9c!important}
+.tj-madd-w{color:#2471a3!important;font-weight:700}
+.tj-madd-j{color:#7d3c98!important}
+.tj-lam-s{color:#e6b800!important}
+.tj-lam-q{color:#5dade2!important}
+.tj-meem-s{color:#e91e8c!important}
+/* Dark mode adjustments */
+[data-theme="dark"] .tj-lam-s{color:#f0d060!important}
+[data-theme="dark"] .tj-ghunnah{color:#c060e0!important;border-bottom-color:#c060e0}
+
+/* Tajweed legend */
+.tj-legend{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;
+  margin-bottom:16px;
+}
+.tj-legend-item{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:11px;
+}
+.tj-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.tj-view .ayah-ar .aw{cursor:help}
+
+/* ══════════════════════════════════════════════════════════════
+   SELECTOR ROW
+══════════════════════════════════════════════════════════════ */
+.sel-row{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.sel-row select{
+  font-size:12px;padding:6px 9px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);
+  cursor:pointer;max-width:170px;
+}
+.sel-row select:focus{outline:none;border-color:var(--g1)}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET
+══════════════════════════════════════════════════════════════ */
+@media(max-width:1023px){
+  #sidebar{width:224px}
+  .logo-sub{display:none}
+  #curSurahBadge{max-width:110px}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE
+══════════════════════════════════════════════════════════════ */
 @media(max-width:639px){
-  :root{--topH:50px;--botH:58px}
-
-  /* Topbar */
+  :root{--top-h:50px;--bot-h:60px}
   #menuBtn{display:flex}
-  #activeInfo{display:none!important}
-  .logo{font-size:15px}
-  #langSel{max-width:110px;font-size:10px}
+  #curSurahBadge{display:none!important}
+  .logo{font-size:14px}
 
-  /* Sidebar becomes slide-over drawer */
+  /* Sidebar becomes slide drawer */
   #sidebar{
-    position:fixed;top:0;left:0;height:100%;width:80%;max-width:300px;
-    transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,0.4);
+    position:fixed;top:0;left:0;height:100%;width:82%;max-width:300px;
+    transform:translateX(-105%);box-shadow:4px 0 28px rgba(0,0,0,0.5);
   }
   #sidebar.open{transform:translateX(0)}
   #closeBtn{display:flex}
-
-  /* Layout: no flex sidebar */
-  #layout{height:calc(100vh - var(--topH) - var(--botH))}
-
-  /* Main tabs — hide on mobile, use bottom nav instead */
+  #layout{height:calc(100vh - var(--top-h) - var(--bot-h))}
   #tabs{display:none}
-
-  /* Bottom nav visible */
   #botNav{display:grid}
-
-  /* Header */
-  .hn{font-size:14px}
-  .hm{font-size:10px}
-  .har{font-size:22px}
-
-  /* Content */
   #content{padding:12px 14px}
-
-  /* Welcome */
-  #welcome{padding:24px 16px;gap:12px}
-  .wtitle{font-size:18px}
-  .wgrid{grid-template-columns:1fr 1fr;gap:8px;max-width:100%}
-
-  /* Read tab */
-  .bismillah{font-size:19px;padding:12px}
-  .ayah-ar{font-size:19px}
-  .ayah-card{padding:12px 14px}
-
-  /* Listen */
-  .now-ar{font-size:20px}
-  .now-card{padding:14px 16px}
-  .ctrl-row{gap:6px}
-  .btn-sm{padding:7px 10px;font-size:11px}
-
-  /* Check */
-  .orig-ar{font-size:19px}
-  .orig-card{padding:12px 14px}
-  .sel-row{gap:5px}
-  .sel-row select{max-width:130px}
+  .now-playing-card{padding:14px 16px}
+  .np-ar{font-size:calc(var(--font-ar-size) - 2px)}
+  .orig-ar{font-size:calc(var(--font-ar-size) - 2px)}
+  .ayah-ar{font-size:calc(var(--font-ar-size) - 2px)}
   .score-ring{width:56px;height:56px}
-
-  /* Ayah selector wrap */
-  .sel-row{flex-wrap:wrap}
+  .tc-group.hide-mob{display:none}
+  #fontSlider{width:60px}
 }
-
-/* Tiny screens */
-@media(max-width:360px){
-  #langSel{display:none}
-  .wgrid{grid-template-columns:1fr}
-  .now-ar{font-size:18px}
+@media(max-width:380px){
+  #langSel{max-width:90px;font-size:10px}
+  .w-features{grid-template-columns:1fr}
+  .tj-legend{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ TOP BAR ══════════════════════════════════════════ -->
-<div id="topbar">
-  <button id="menuBtn" onclick="openSidebar()" aria-label="Open surah list">☰</button>
-  <div class="logo">☪ Al-Quran <small>Learning Center</small></div>
-  <div id="activeInfo" style="display:none"></div>
-  <div id="langWrap">
-    <label>Translation:</label>
-    <select id="langSel" onchange="changeLang()">
-      <option value="">— Arabic Only —</option>
-      <option value="en.sahih" selected>🇬🇧 English</option>
-      <option value="ur.jalandhry">🇵🇰 اردو</option>
-      <option value="ur.maududi">🇵🇰 اردو (Maududi)</option>
-      <option value="hi.hindi">🇮🇳 हिन्दी</option>
-      <option value="bn.bengali">🇧🇩 বাংলা</option>
-      <option value="fr.hamidullah">🇫🇷 Français</option>
-      <option value="tr.diyanet">🇹🇷 Türkçe</option>
-      <option value="id.indonesian">🇮🇩 Indonesia</option>
-      <option value="de.aburida">🇩🇪 Deutsch</option>
-      <option value="es.asad">🇪🇸 Español</option>
-      <option value="ru.kuliev">🇷🇺 Русский</option>
-      <option value="ms.basmeih">🇲🇾 Melayu</option>
-      <option value="zh.majian">🇨🇳 中文</option>
-      <option value="fa.makarem">🇮🇷 فارسی</option>
-      <option value="ta.tamil">🇮🇳 தமிழ்</option>
-      <option value="sw.barwani">🌍 Swahili</option>
-    </select>
+<!-- ══════════════ TOP BAR ════════════════════════════════════ -->
+<header id="topbar" role="banner">
+  <button id="menuBtn" aria-label="Open Surah list" aria-expanded="false">☰</button>
+
+  <div class="logo" aria-label="Al-Quran Learning Center">
+    ☪ Al-Qurʾān
+    <small class="logo-sub">Recitation & Tajwīd</small>
   </div>
-</div>
 
-<!-- ══ LAYOUT ════════════════════════════════════════════ -->
+  <div id="curSurahBadge" style="display:none" aria-live="polite"></div>
+
+  <nav id="topControls" aria-label="App controls">
+    <!-- Font Size -->
+    <div class="tc-group" role="group" aria-label="Arabic font size">
+      <span class="tc-label" id="fontLabel">اأ</span>
+      <input type="range" id="fontSlider" min="16" max="36" value="22"
+             aria-label="Arabic font size" aria-valuemin="16" aria-valuemax="36">
+    </div>
+
+    <!-- Tajweed toggle -->
+    <div class="tc-group hide-mob" role="group">
+      <button class="tog" id="tajBtn" aria-pressed="false" onclick="toggleTajweed()">🌈 Tajwīd</button>
+    </div>
+
+    <!-- Dark mode -->
+    <div class="tc-group" role="group">
+      <button class="tog" id="themeBtn" aria-label="Toggle dark/light mode" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <!-- Language -->
+    <div class="tc-group" role="group" aria-label="Translation language">
+      <select id="langSel" onchange="changeLang()" aria-label="Select translation language">
+        <option value="">— Arabic Only —</option>
+        <option value="en.sahih" selected>🇬🇧 English</option>
+        <option value="ur.jalandhry">🇵🇰 اردو</option>
+        <option value="ur.maududi">🇵🇰 اردو (Maududi)</option>
+        <option value="hi.hindi">🇮🇳 हिन्दी</option>
+        <option value="bn.bengali">🇧🇩 বাংলা</option>
+        <option value="fr.hamidullah">🇫🇷 Français</option>
+        <option value="tr.diyanet">🇹🇷 Türkçe</option>
+        <option value="id.indonesian">🇮🇩 Indonesia</option>
+        <option value="de.aburida">🇩🇪 Deutsch</option>
+        <option value="es.asad">🇪🇸 Español</option>
+        <option value="ru.kuliev">🇷🇺 Русский</option>
+        <option value="ms.basmeih">🇲🇾 Melayu</option>
+        <option value="zh.majian">🇨🇳 中文</option>
+        <option value="fa.makarem">🇮🇷 فارسی</option>
+        <option value="ta.tamil">🇮🇳 தமிழ்</option>
+        <option value="sw.barwani">🌍 Swahili</option>
+      </select>
+    </div>
+  </nav>
+</header>
+
+<!-- ══════════════ LAYOUT ═════════════════════════════════════ -->
 <div id="layout">
-
-  <!-- Overlay -->
-  <div id="overlay" onclick="closeSidebar()"></div>
+  <div id="overlay" role="presentation" onclick="closeSidebar()"></div>
 
   <!-- SIDEBAR -->
-  <div id="sidebar">
+  <aside id="sidebar" aria-label="Surah navigation">
     <div id="sHead">
-      <button id="closeBtn" onclick="closeSidebar()" aria-label="Close">✕</button>
-      <input id="sSearch" type="text" placeholder="🔍 Search surah…" oninput="filterList()">
+      <button id="closeBtn" aria-label="Close sidebar">✕</button>
+      <input id="sSearch" type="search" placeholder="🔍 Search surah…"
+             oninput="filterList()" aria-label="Search surahs" autocomplete="off">
     </div>
-    <div id="sList"></div>
-  </div>
+    <div id="sList" role="list" aria-label="114 Surahs"></div>
+  </aside>
 
-  <!-- MAIN -->
-  <div id="main">
+  <!-- MAIN CONTENT -->
+  <main id="main">
 
-    <!-- WELCOME -->
-    <div id="welcome">
-      <div class="wico">☪</div>
-      <div class="wtitle">Al-Quran</div>
-      <p class="wsub">Select any of the 114 Surahs from the list to begin your learning journey</p>
-      <div class="wgrid">
-        <div class="wcard"><div class="wi">📖</div><div class="wt">Read</div><div class="wd">Arabic + translation in 15+ languages</div></div>
-        <div class="wcard"><div class="wi">🎧</div><div class="wt">Listen</div><div class="wd">Mishary Alafasy audio, ayah by ayah</div></div>
-        <div class="wcard"><div class="wi">🎙️</div><div class="wt">Record</div><div class="wd">Speak Arabic — detect your recitation</div></div>
-        <div class="wcard"><div class="wi">🤖</div><div class="wt">AI Check</div><div class="wd">Detailed Tajweed feedback by Claude</div></div>
+    <!-- Welcome -->
+    <section id="welcome" aria-label="Welcome">
+      <div class="w-icon" aria-hidden="true">☪</div>
+      <h1 class="w-title">Al-Qurʾān</h1>
+      <p class="w-sub">Complete Recitation, Listening & Tajwīd Learning Platform</p>
+      <div class="w-features" role="list">
+        <div class="w-feat" role="listitem"><div class="fi">📖</div><div class="ft">Read</div><div class="fd">Arabic + 15 language translations with font control</div></div>
+        <div class="w-feat" role="listitem"><div class="fi">🎧</div><div class="ft">Listen</div><div class="fd">Mishary Alafasy with speed control & word sync</div></div>
+        <div class="w-feat" role="listitem"><div class="fi">🎙️</div><div class="ft">Record</div><div class="fd">Speak Arabic — AI checks your Tajwīd accuracy</div></div>
+        <div class="w-feat" role="listitem"><div class="fi">🌈</div><div class="ft">Tajwīd</div><div class="fd">13-color visual Tajwīd rule highlighting system</div></div>
       </div>
-      <button class="wbtn" onclick="openSidebar()">📖 Browse Surahs →</button>
-    </div>
+      <button class="w-btn" onclick="openSidebar()" aria-label="Browse surahs">📖 Browse All 114 Surahs →</button>
+    </section>
 
-    <!-- SURAH VIEW -->
-    <div id="view">
+    <!-- Surah View -->
+    <div id="view" role="region" aria-label="Surah content">
       <div id="hdr">
-        <div><div class="hn" id="hn"></div><div class="hm" id="hm"></div></div>
-        <div class="har" id="har"></div>
+        <div id="hdr-left">
+          <div class="hn" id="hdrName" aria-live="polite"></div>
+          <div class="hm" id="hdrMeta"></div>
+        </div>
+        <div id="hdr-ar" aria-hidden="true"></div>
       </div>
-      <div id="tabs">
-        <button class="tb on" id="tbRead" onclick="switchTab('read')">📖 Read</button>
-        <button class="tb" id="tbListen" onclick="switchTab('listen')">🎧 Listen</button>
-        <button class="tb" id="tbCheck" onclick="switchTab('check')">🎙️ Check Pronunciation</button>
-      </div>
-      <div id="content"></div>
+
+      <nav id="tabs" aria-label="Content tabs" role="tablist">
+        <button class="tb on" id="tbRead" role="tab" aria-selected="true" onclick="switchTab('read')">📖 Read</button>
+        <button class="tb" id="tbListen" role="tab" aria-selected="false" onclick="switchTab('listen')">🎧 Listen</button>
+        <button class="tb" id="tbCheck" role="tab" aria-selected="false" onclick="switchTab('check')">🎙️ Check</button>
+        <button class="tb" id="tbTajweed" role="tab" aria-selected="false" onclick="switchTab('tajweed')">🌈 Tajwīd</button>
+      </nav>
+
+      <div id="content" role="tabpanel" aria-live="polite"></div>
     </div>
-
-  </div><!-- /main -->
-</div><!-- /layout -->
-
-<!-- ══ BOTTOM NAV (mobile) ═══════════════════════════════ -->
-<div id="botNav">
-  <button class="bn" id="bnSurahs" onclick="openSidebar()">
-    <span class="bi">☰</span><span class="bl">Surahs</span>
-  </button>
-  <button class="bn" id="bnRead" onclick="mobileTab('read')" disabled>
-    <span class="bi">📖</span><span class="bl">Read</span>
-  </button>
-  <button class="bn" id="bnListen" onclick="mobileTab('listen')" disabled>
-    <span class="bi">🎧</span><span class="bl">Listen</span>
-  </button>
-  <button class="bn" id="bnCheck" onclick="mobileTab('check')" disabled>
-    <span class="bi">🎙️</span><span class="bl">Check</span>
-  </button>
+  </main>
 </div>
 
-<audio id="aud" onended="onEnd()"></audio>
+<!-- ══════════════ BOTTOM NAV (mobile) ═══════════════════════ -->
+<nav id="botNav" aria-label="Mobile navigation" role="navigation">
+  <button class="bn" id="bnSurahs" onclick="openSidebar()" aria-label="Open surah list">
+    <span class="bi" aria-hidden="true">☰</span><span class="bl">Surahs</span>
+  </button>
+  <button class="bn" id="bnRead" onclick="mTab('read')" disabled aria-label="Read tab">
+    <span class="bi" aria-hidden="true">📖</span><span class="bl">Read</span>
+  </button>
+  <button class="bn" id="bnListen" onclick="mTab('listen')" disabled aria-label="Listen tab">
+    <span class="bi" aria-hidden="true">🎧</span><span class="bl">Listen</span>
+  </button>
+  <button class="bn" id="bnCheck" onclick="mTab('check')" disabled aria-label="Check pronunciation">
+    <span class="bi" aria-hidden="true">🎙️</span><span class="bl">Check</span>
+  </button>
+</nav>
+
+<audio id="aud" aria-hidden="true"></audio>
 
 <script>
-// ════════════════════════════════════════════════════════
-//  SURAH DATA
-// ════════════════════════════════════════════════════════
+'use strict';
+// ════════════════════════════════════════════════════════════
+//  SURAH DATA (114 surahs)
+// ════════════════════════════════════════════════════════════
 const SURAHS=[
   {n:1,e:"Al-Fatihah",a:"الفاتحة",v:7,t:"Meccan"},{n:2,e:"Al-Baqarah",a:"البقرة",v:286,t:"Medinan"},
   {n:3,e:"Ali 'Imran",a:"آل عمران",v:200,t:"Medinan"},{n:4,e:"An-Nisa",a:"النساء",v:176,t:"Medinan"},
@@ -571,416 +789,763 @@ const SURAHS=[
   {n:113,e:"Al-Falaq",a:"الفلق",v:5,t:"Meccan"},{n:114,e:"An-Nas",a:"الناس",v:6,t:"Meccan"},
 ];
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  TAJWEED RULES — 13 Categories
+// ════════════════════════════════════════════════════════════
+const TJ_RULES = [
+  {id:'qalqalah', cls:'tj-qalqalah', color:'#e67e22', name:'Qalqalah', desc:'Echo: ق ط ب ج د with sukūn'},
+  {id:'ghunnah',  cls:'tj-ghunnah',  color:'#9b59b6', name:'Ghunnah',  desc:'Nasalization: ن م with shaddah'},
+  {id:'ikhfa',    cls:'tj-ikhfa',    color:'#3498db', name:'Ikhfāʾ',   desc:'Concealment: ن/tanwīn before 15 letters'},
+  {id:'idgham-g', cls:'tj-idgham-g', color:'#27ae60', name:'Idghām (Ghunnah)', desc:'Merging with nasalization: before ي ن م و'},
+  {id:'idgham-ng',cls:'tj-idgham-ng',color:'#16a085', name:'Idghām (No Ghunnah)', desc:'Merging without nasalization: before ل ر'},
+  {id:'iqlab',    cls:'tj-iqlab',    color:'#e74c3c', name:'Iqlāb',    desc:'Conversion: ن/tanwīn before ب'},
+  {id:'izhar',    cls:'tj-izhar',    color:'#d4ac0d', name:'Iẓhār',    desc:'Clear: ن/tanwīn before ء ه ع ح غ خ'},
+  {id:'madd-t',   cls:'tj-madd-t',  color:'#1abc9c', name:'Madd Ṭabīʿī', desc:'Natural elongation (2 counts)'},
+  {id:'madd-w',   cls:'tj-madd-w',  color:'#2471a3', name:'Madd Wājib', desc:'Obligatory elongation (4-5 counts)'},
+  {id:'madd-j',   cls:'tj-madd-j',  color:'#7d3c98', name:'Madd Jāʾiz', desc:'Permissible elongation (2/4/6 counts)'},
+  {id:'lam-s',    cls:'tj-lam-s',   color:'#e6b800', name:'Lām Shamsiyyah', desc:'Sun letters: assimilated lām'},
+  {id:'lam-q',    cls:'tj-lam-q',   color:'#5dade2', name:'Lām Qamariyyah', desc:'Moon letters: clear lām'},
+  {id:'meem-s',   cls:'tj-meem-s',  color:'#e91e8c', name:'Mīm Sākinah', desc:'Silent meem rules (Ikhfā Shafawī, Idghām)'},
+];
+
+// ════════════════════════════════════════════════════════════
 //  STATE
-// ════════════════════════════════════════════════════════
-let S={
-  surah:null, arabicAyahs:[], trAyahs:[], idx:0,
-  playing:false, tab:'read',
+// ════════════════════════════════════════════════════════════
+let S = {
+  surah:null, arabicAyahs:[], trAyahs:[],
+  idx:0, playing:false, speed:1.0,
+  tab:'read', tajweedOn:false,
   recording:false, recog:null,
   transcript:'', feedback:null, analyzing:false,
-  autoPlay:false, lang:'en.sahih'
+  autoPlay:false, lang:'en.sahih',
+  audioSrc:'', audioDuration:0, audioProgress:0,
+  progressTimer:null,
 };
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 //  UTILS
-// ════════════════════════════════════════════════════════
-const g=id=>document.getElementById(id);
-function esc(t){if(!t)return'';return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function pad3(n){return String(n).padStart(3,'0');}
-function isMobile(){return window.innerWidth<640;}
+// ════════════════════════════════════════════════════════════
+const g = id => document.getElementById(id);
+const esc = t => !t ? '' : String(t)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const p3 = n => String(n).padStart(3,'0');
+const isMob = () => window.innerWidth < 640;
 
-// ════════════════════════════════════════════════════════
-//  SIDEBAR DRAWER (mobile)
-// ════════════════════════════════════════════════════════
+function fmt(sec){
+  const m=Math.floor(sec/60), s=Math.floor(sec%60);
+  return `${m}:${s<10?'0':''}${s}`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  THEME SYSTEM
+// ════════════════════════════════════════════════════════════
+function initTheme(){
+  const saved = localStorage.getItem('quran-theme');
+  const sys = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  setTheme(saved || sys);
+  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change', e => {
+    if(!localStorage.getItem('quran-theme')) setTheme(e.matches?'dark':'light');
+  });
+}
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  g('themeBtn').textContent = t==='dark' ? '☀️' : '🌙';
+  g('themeBtn').setAttribute('aria-label', `Switch to ${t==='dark'?'light':'dark'} mode`);
+  g('themeBtn').classList.toggle('on', t==='dark');
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const nxt = cur==='dark' ? 'light' : 'dark';
+  setTheme(nxt);
+  localStorage.setItem('quran-theme', nxt);
+}
+
+// ════════════════════════════════════════════════════════════
+//  FONT SIZE
+// ════════════════════════════════════════════════════════════
+function initFont(){
+  const saved = localStorage.getItem('quran-fontsize') || '22';
+  g('fontSlider').value = saved;
+  applyFont(saved);
+  g('fontSlider').addEventListener('input', e => {
+    applyFont(e.target.value);
+    localStorage.setItem('quran-fontsize', e.target.value);
+  });
+}
+function applyFont(v){
+  document.documentElement.style.setProperty('--font-ar-size', v+'px');
+  g('fontSlider').setAttribute('aria-valuenow', v);
+}
+
+// ════════════════════════════════════════════════════════════
+//  TAJWEED TOGGLE
+// ════════════════════════════════════════════════════════════
+function toggleTajweed(){
+  S.tajweedOn = !S.tajweedOn;
+  g('tajBtn').classList.toggle('on', S.tajweedOn);
+  g('tajBtn').setAttribute('aria-pressed', S.tajweedOn);
+  if(S.arabicAyahs.length) renderContent();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SIDEBAR
+// ════════════════════════════════════════════════════════════
 function openSidebar(){
   g('sidebar').classList.add('open');
   g('overlay').classList.add('show');
+  g('menuBtn').setAttribute('aria-expanded','true');
   document.body.style.overflow='hidden';
+  g('sSearch').focus();
 }
 function closeSidebar(){
   g('sidebar').classList.remove('open');
   g('overlay').classList.remove('show');
+  g('menuBtn').setAttribute('aria-expanded','false');
   document.body.style.overflow='';
 }
-
-// ════════════════════════════════════════════════════════
-//  SIDEBAR LIST
-// ════════════════════════════════════════════════════════
 function renderList(list){
-  g('sList').innerHTML=list.map(s=>{
-    const act=S.surah&&S.surah.n===s.n;
-    return`<div class="si${act?' active':''}" onclick="selectSurah(${s.n})">
-      <div class="sn">${s.n}</div>
-      <div class="sinfo"><div class="sname">${s.e}</div><div class="smeta">${s.v} ayahs · ${s.t}</div></div>
-      <div class="sar">${s.a}</div>
+  g('sList').innerHTML = list.map(s=>{
+    const act = S.surah && S.surah.n===s.n;
+    return `<div class="si${act?' active':''}" role="listitem" tabindex="0"
+      onclick="pickSurah(${s.n})" onkeydown="if(event.key==='Enter')pickSurah(${s.n})"
+      aria-label="Surah ${s.n}: ${s.e}, ${s.v} ayahs, ${s.t}"
+      ${act?'aria-current="true"':''}>
+      <div class="si-num" aria-hidden="true">${s.n}</div>
+      <div class="si-info">
+        <div class="si-name">${s.e}</div>
+        <div class="si-meta">${s.v} ayahs · ${s.t}</div>
+      </div>
+      <div class="si-ar" aria-hidden="true">${s.a}</div>
     </div>`;
   }).join('');
 }
 function filterList(){
-  const q=g('sSearch').value.trim().toLowerCase();
-  renderList(!q?SURAHS:SURAHS.filter(s=>s.e.toLowerCase().includes(q)||s.a.includes(q)||String(s.n).startsWith(q)));
+  const q = g('sSearch').value.trim().toLowerCase();
+  renderList(!q ? SURAHS : SURAHS.filter(s=>
+    s.e.toLowerCase().includes(q)||s.a.includes(q)||String(s.n).startsWith(q)
+  ));
+}
+function pickSurah(n){
+  closeSidebar();
+  selectSurah(n);
 }
 renderList(SURAHS);
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 //  SELECT SURAH
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 async function selectSurah(n){
-  const s=SURAHS.find(x=>x.n===n);
+  const s = SURAHS.find(x=>x.n===n);
   stopAudio();
-  if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
-  S={...S,surah:s,arabicAyahs:[],trAyahs:[],idx:0,playing:false,transcript:'',feedback:null,recording:false};
-
-  // Close sidebar on mobile after selecting
-  closeSidebar();
+  cleanupRecording();
+  S = {...S, surah:s, arabicAyahs:[], trAyahs:[], idx:0, playing:false,
+       transcript:'', feedback:null, recording:false, audioDuration:0, audioProgress:0};
+  filterList();
 
   // Show view
   g('welcome').style.display='none';
-  const v=g('view');v.style.display='flex';v.style.flex='1';v.style.flexDirection='column';v.style.overflow='hidden';
-  g('hn').textContent=s.e;
-  g('hm').textContent=`Surah ${s.n} · ${s.v} Ayahs · ${s.t}`;
-  g('har').textContent=s.a;
-  g('activeInfo').style.display='block';
-  g('activeInfo').textContent=`${s.e} (${s.n}/114)`;
+  const v=g('view'); v.style.display='flex'; v.style.flex='1';
+  v.style.flexDirection='column'; v.style.overflow='hidden';
+  g('hdrName').textContent=s.e;
+  g('hdrMeta').textContent=`Surah ${s.n}  ·  ${s.v} Ayahs  ·  ${s.t}`;
+  g('hdr-ar').textContent=s.a;
+  g('curSurahBadge').style.display='block';
+  g('curSurahBadge').textContent=`${s.e} (${s.n}/114)`;
+  document.title=`${s.e} — Al-Qurʾān`;
 
-  // Update sidebar highlight
-  filterList();
-  // Enable bottom nav
-  ['bnRead','bnListen','bnCheck'].forEach(id=>{const el=g(id);if(el)el.disabled=false;});
-  updateTabs();
-  updateBotNav();
+  // Enable mobile nav
+  ['bnRead','bnListen','bnCheck'].forEach(id=>{
+    const el=g(id); if(el){ el.disabled=false; }
+  });
+  updateTabs(); updateBotNav();
 
-  g('content').innerHTML=`<div class="loading-box"><div class="spin"></div><p>Loading ${s.e}…</p></div>`;
+  g('content').innerHTML=`<div class="loading-box" aria-busy="true"><div class="spin"></div><p>Loading ${esc(s.e)}…</p></div>`;
   await fetchAyahs(n);
 }
 
-// ════════════════════════════════════════════════════════
-//  FETCH (separate calls — robust)
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  FETCH AYAHS
+// ════════════════════════════════════════════════════════════
 async function fetchAyahs(n){
   try{
-    const arRes=await fetch(`https://api.alquran.cloud/v1/surah/${n}/ar.uthmani`);
-    if(!arRes.ok)throw new Error(`HTTP ${arRes.status}`);
-    const arJson=await arRes.json();
-    if(arJson.code!==200)throw new Error(arJson.status||'API error');
-    S.arabicAyahs=arJson.data.ayahs||[];
-
-    S.trAyahs=[];
+    const arRes = await fetch(`https://api.alquran.cloud/v1/surah/${n}/ar.uthmani`);
+    if(!arRes.ok) throw new Error(`Network error: HTTP ${arRes.status}`);
+    const arJson = await arRes.json();
+    if(arJson.code!==200) throw new Error(arJson.status||'API error');
+    S.arabicAyahs = arJson.data.ayahs||[];
+    S.trAyahs = [];
     if(S.lang){
       try{
-        const tr=await fetch(`https://api.alquran.cloud/v1/surah/${n}/${S.lang}`);
-        if(tr.ok){const tj=await tr.json();if(tj.code===200)S.trAyahs=tj.data.ayahs||[];}
-      }catch(te){console.warn('Translation failed:',te);}
+        const tr = await fetch(`https://api.alquran.cloud/v1/surah/${n}/${S.lang}`);
+        if(tr.ok){ const tj=await tr.json(); if(tj.code===200) S.trAyahs=tj.data.ayahs||[]; }
+      }catch(te){ console.warn('Translation failed:',te); }
     }
     renderContent();
   }catch(err){
-    console.error(err);
-    g('content').innerHTML=`<div class="err-box">
+    console.error('fetchAyahs:',err);
+    g('content').innerHTML=`<div class="err-box" role="alert">
       <p>⚠️ Could not load ${esc(S.surah.e)}</p>
       <small>${esc(err.message)}</small>
-      <small>Check your internet connection and try again.</small>
-      <button class="btn btn-p" onclick="fetchAyahs(${n})">↺ Retry</button>
+      <small>Please check your internet connection.</small>
+      <button class="btn btn-p" onclick="fetchAyahs(${S.surah.n})">↺ Retry</button>
     </div>`;
   }
 }
 
 async function changeLang(){
-  S.lang=g('langSel').value;
-  if(!S.surah)return;
+  S.lang = g('langSel').value;
+  if(!S.surah) return;
+  S.trAyahs = [];
   g('content').innerHTML=`<div class="loading-box"><div class="spin"></div><p>Loading translation…</p></div>`;
-  S.trAyahs=[];
   if(S.lang){
     try{
       const r=await fetch(`https://api.alquran.cloud/v1/surah/${S.surah.n}/${S.lang}`);
-      if(r.ok){const j=await r.json();if(j.code===200)S.trAyahs=j.data.ayahs||[];}
-    }catch(e){console.warn(e);}
+      if(r.ok){ const j=await r.json(); if(j.code===200) S.trAyahs=j.data.ayahs||[]; }
+    }catch(e){ console.warn(e); }
   }
   renderContent();
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 //  TABS
-// ════════════════════════════════════════════════════════
-function switchTab(tab){stopAudio();S.tab=tab;S.playing=false;updateTabs();updateBotNav();renderContent();}
-function mobileTab(tab){if(!S.surah)return;switchTab(tab);}
-
+// ════════════════════════════════════════════════════════════
+function switchTab(tab){
+  stopAudio(); S.tab=tab; S.playing=false;
+  updateTabs(); updateBotNav(); renderContent();
+}
+function mTab(tab){ if(!S.surah)return; switchTab(tab); }
 function updateTabs(){
-  ['read','listen','check'].forEach(t=>{
+  ['read','listen','check','tajweed'].forEach(t=>{
     const el=g('tb'+t.charAt(0).toUpperCase()+t.slice(1));
-    if(el)el.className='tb'+(S.tab===t?' on':'');
+    if(!el)return;
+    el.className='tb'+(S.tab===t?' on':'');
+    el.setAttribute('aria-selected', S.tab===t);
   });
 }
 function updateBotNav(){
   const map={read:'bnRead',listen:'bnListen',check:'bnCheck'};
-  Object.values(map).forEach(id=>{const el=g(id);if(el)el.className='bn';});
-  const el=g(map[S.tab]);if(el)el.className='bn on';
+  Object.values(map).forEach(id=>{const el=g(id);if(el)el.className='bn';el&&(el.disabled=!S.surah);});
+  const el=g(map[S.tab]); if(el&&S.surah) el.className='bn on';
 }
-
 function renderContent(){
   if(!S.arabicAyahs.length)return;
   if(S.tab==='read')renderRead();
   else if(S.tab==='listen')renderListen();
-  else renderCheck();
+  else if(S.tab==='check')renderCheck();
+  else renderTajweedTab();
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 //  HELPERS
-// ════════════════════════════════════════════════════════
-function getTr(i){return(S.trAyahs[i]&&S.trAyahs[i].text)||'';}
+// ════════════════════════════════════════════════════════════
+function getTr(i){ return (S.trAyahs[i]&&S.trAyahs[i].text)||''; }
 function trCls(lang){
   if(!lang)return'';
-  if(lang.startsWith('ur.')||lang.startsWith('fa.'))return' ayah-tr-ur';
-  if(lang.startsWith('zh.'))return' ayah-tr-zh';
+  const rtl=['ur.','fa.','ar.'];
+  if(rtl.some(p=>lang.startsWith(p)))return' ayah-tr-rtl';
   return'';
 }
 
-// ════════════════════════════════════════════════════════
-//  READ TAB
-// ════════════════════════════════════════════════════════
-function renderRead(){
-  const{arabicAyahs,idx,surah,lang}=S;
-  const hasTr=S.trAyahs.length>0;
-  const pct=Math.round((idx+1)/arabicAyahs.length*100);
-  const tc=trCls(lang);
+// ════════════════════════════════════════════════════════════
+//  TAJWEED ANALYZER — 13 rules
+// ════════════════════════════════════════════════════════════
+const QALQALAH = new Set(['ق','ط','ب','ج','د']);
+const SUKUN = '\u0652', SHADDAH = '\u0651';
+const FATHAH = '\u064E', DAMMAH = '\u064F', KASRAH = '\u0650';
+const MADD_ALEF = '\u0627', MADD_WAW = '\u0648', MADD_YA = '\u064A';
+const NOON = '\u0646', MEEM = '\u0645', LAM = '\u0644';
+const SUN_LETTERS = new Set(['ت','ث','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ل','ن']);
+const MOON_LETTERS = new Set(['ا','ب','ج','ح','خ','ع','غ','ف','ق','ك','م','ه','و','ي']);
+const IZHAR_LETTERS = new Set(['ء','ه','ع','ح','غ','خ']);
+const IDGHAM_G = new Set(['ي','ن','م','و']);
+const IDGHAM_NG = new Set(['ل','ر']);
+const IKHFA_LETTERS = new Set(['ت','ث','ج','د','ذ','ز','س','ش','ص','ض','ط','ظ','ف','ق','ك']);
 
-  let html=`<div style="margin-bottom:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-      <span style="font-size:11px;color:var(--muted)">Ayah ${idx+1} of ${arabicAyahs.length}</span>
-      <span style="font-size:11px;font-weight:700;color:var(--g1)">${pct}%</span>
+function colorWordTajweed(word){
+  // Returns HTML string with appropriate Tajweed class applied to word
+  if(!word.trim()) return word;
+  const chars = [...word];
+  let cls = '';
+  let title = '';
+
+  // Check for Lam Shamsiyyah/Qamariyyah (word starts with ال)
+  if(word.startsWith('\u0627\u0644') || word.startsWith('\u0622\u0644')){
+    const nextLetter = chars.find((c,i)=> i>1 && /[\u0600-\u06FF]/.test(c) && c!==SUKUN && c!==SHADDAH && c!==FATHAH && c!==DAMMAH && c!==KASRAH);
+    if(nextLetter){
+      if(SUN_LETTERS.has(nextLetter)){ cls='tj-lam-s'; title='Lām Shamsiyyah'; }
+      else if(MOON_LETTERS.has(nextLetter)){ cls='tj-lam-q'; title='Lām Qamariyyah'; }
+    }
+  }
+
+  // Scan characters for Tajweed rules
+  if(!cls){
+    for(let i=0;i<chars.length;i++){
+      const c=chars[i], next=chars[i+1]||'', prev=chars[i-1]||'';
+      // Qalqalah: Qalqalah letter followed by sukun or at word end
+      if(QALQALAH.has(c) && (next===SUKUN || i===chars.length-1 || (i===chars.length-2 && /[\u064B-\u065F]/.test(next)))){
+        cls='tj-qalqalah'; title='Qalqalah'; break;
+      }
+      // Ghunnah: Noon or Meem with Shaddah
+      if((c===NOON||c===MEEM) && next===SHADDAH){
+        cls='tj-ghunnah'; title='Ghunnah'; break;
+      }
+      // Meem Sakinah
+      if(c===MEEM && next===SUKUN){
+        cls='tj-meem-s'; title='Mīm Sākinah'; break;
+      }
+      // Madd — look for long vowel patterns
+      if(c===MADD_ALEF && /[\u064E\u0627]/.test(prev)){
+        cls='tj-madd-t'; title='Madd Ṭabīʿī'; break;
+      }
+      if(c===MADD_WAW && prev===DAMMAH){
+        cls='tj-madd-t'; title='Madd Ṭabīʿī'; break;
+      }
+      if(c===MADD_YA && prev===KASRAH){
+        cls='tj-madd-t'; title='Madd Ṭabīʿī'; break;
+      }
+    }
+  }
+
+  // Iqlab: word ends with noon sakinah/tanwin before baa in next word
+  // (simplified - check if word ends with ن + sukun pattern)
+  if(!cls){
+    const lastSignificant = chars.slice(-3).join('');
+    if((lastSignificant.includes(NOON) && lastSignificant.includes(SUKUN)) ||
+       word.endsWith('\u064C') || word.endsWith('\u064D') || word.endsWith('\u064B')){
+      // Tanwin/noon sakinah — rule depends on next word, mark as potential
+      cls='tj-ikhfa'; title='Ikhfāʾ / Tanwīn';
+    }
+  }
+
+  if(cls){
+    return `<span class="aw ${cls}" title="${title}">${esc(word)}</span>`;
+  }
+  return `<span class="aw">${esc(word)}</span>`;
+}
+
+function wrapWords(text, tajweed=false){
+  // Split text into words, wrap each in a span
+  const words = text.split(/(\s+)/);
+  return words.map((w, i)=>{
+    if(/^\s+$/.test(w)) return w;
+    if(tajweed) return colorWordTajweed(w);
+    return `<span class="aw" data-wi="${i}">${esc(w)}</span>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  READ TAB
+// ════════════════════════════════════════════════════════════
+function renderRead(){
+  const {arabicAyahs, idx, surah, lang} = S;
+  const hasTr = S.trAyahs.length>0;
+  const pct = Math.round((idx+1)/arabicAyahs.length*100);
+  const tc = trCls(lang);
+
+  let html=`
+  <div class="prog-wrap" aria-label="Reading progress">
+    <div class="prog-info">
+      <span>Reading progress — Ayah ${idx+1} of ${arabicAyahs.length}</span>
+      <strong>${pct}%</strong>
     </div>
-    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="prog-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+      <div class="prog-fill" style="width:${pct}%"></div>
+    </div>
   </div>`;
 
-  if(surah.n!==9)html+=`<div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
+  // Bismillah
+  if(surah.n!==9 && surah.n!==1){
+    html+=`<div class="bismillah" lang="ar" aria-label="Bismillah ir-Rahman ir-Rahim" role="text" tabindex="0">
+      بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+    </div>`;
+  }
 
   arabicAyahs.forEach((a,i)=>{
     const tr=hasTr?getTr(i):'';
-    html+=`<div class="ayah-card${i===idx?' cur':''}" id="ac${i}" onclick="setIdx(${i})">
-      <div class="ayah-num">${a.numberInSurah}</div>
-      <div class="ayah-ar">${a.text} <span style="font-size:13px;color:var(--lite)">۝${a.numberInSurah}</span></div>
-      ${tr?`<div class="ayah-tr${tc}">${esc(tr)}</div>`:''}
-    </div>`;
+    const arHtml=S.tajweedOn ? wrapWords(a.text,true) : wrapWords(a.text,false);
+    html+=`<article class="ayah-card${i===idx?' cur':''}" id="ac${i}"
+      onclick="setReadIdx(${i})" tabindex="0" role="button"
+      aria-label="Ayah ${a.numberInSurah}"
+      onkeydown="if(event.key==='Enter')setReadIdx(${i})">
+      <div class="ayah-badge" aria-hidden="true">${a.numberInSurah}</div>
+      <div class="ayah-ar" lang="ar" dir="rtl" aria-label="Arabic text of Ayah ${a.numberInSurah}">
+        ${arHtml}
+        <span class="ayah-num-inline" aria-hidden="true">۝${a.numberInSurah}</span>
+      </div>
+      ${tr?`<div class="ayah-tr${tc}" lang="${langCode(S.lang)}">${esc(tr)}</div>`:''}
+    </article>`;
   });
 
   g('content').innerHTML=html;
   setTimeout(()=>{const el=g(`ac${idx}`);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
 }
-function setIdx(i){S.idx=i;renderRead();}
+function setReadIdx(i){ S.idx=i; renderRead(); }
+function langCode(l){ if(!l)return''; return l.split('.')[0]; }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 //  LISTEN TAB
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 function renderListen(){
-  const{arabicAyahs,idx,surah,playing,autoPlay,lang}=S;
+  const {arabicAyahs, idx, surah, playing, autoPlay, lang, speed, audioDuration, audioProgress} = S;
   const cur=arabicAyahs[idx]; if(!cur)return;
   const tr=getTr(idx);
   const tc=trCls(lang);
-  const mobile=isMobile();
+  const mobile=isMob();
 
-  let html=`<div class="now-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="background:rgba(255,255,255,0.12);color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">Ayah ${cur.numberInSurah} / ${arabicAyahs.length}</span>
-      <span style="font-size:10px;color:rgba(255,255,255,0.5)">🎙️ Mishary Alafasy</span>
+  // Build word-wrapped arabic for current ayah (for highlighting)
+  const arWords = cur.text.split(/(\s+)/);
+  let arHtml = arWords.map((w,wi)=>
+    /^\s+$/.test(w) ? w : `<span class="aw" id="npw-${wi}">${esc(w)}</span>`
+  ).join('');
+
+  const speeds=[0.5,0.75,1.0,1.25,1.5,2.0];
+  const speedBtns=speeds.map(sp=>
+    `<button class="spd${speed===sp?' on':''}" onclick="setSpeed(${sp})" aria-pressed="${speed===sp}" aria-label="${sp}x speed">${sp}x</button>`
+  ).join('');
+
+  let html=`
+  <div class="now-playing-card" role="region" aria-label="Now playing: Ayah ${cur.numberInSurah}">
+    <div class="np-meta">
+      <span class="badge" style="background:rgba(255,255,255,0.12);color:white;font-size:10px">
+        Ayah ${cur.numberInSurah} / ${arabicAyahs.length}
+      </span>
+      <span style="font-size:10px;color:rgba(255,255,255,0.4)">🎙️ Mishary Alafasy</span>
     </div>
-    <div class="now-ar">${cur.text} <span style="font-size:14px;opacity:0.35">۝${cur.numberInSurah}</span></div>
-    ${tr?`<div class="now-tr${tc}">${esc(tr)}</div>`:''}
+    <div class="np-ar" lang="ar" dir="rtl" id="npText" aria-label="Arabic text of current ayah">
+      ${arHtml} <span style="font-size:14px;opacity:0.3">۝${cur.numberInSurah}</span>
+    </div>
+    ${tr?`<div class="np-tr${tc}">${esc(tr)}</div>`:''}
+
+    <!-- Audio progress slider -->
+    <div class="audio-prog-wrap">
+      <input type="range" class="audio-prog-bar" id="seekBar"
+        min="0" max="${Math.ceil(audioDuration)||100}" value="${Math.ceil(audioProgress)||0}"
+        oninput="seekAudio(this.value)" aria-label="Audio seek" aria-valuemin="0" aria-valuemax="${Math.ceil(audioDuration)||100}">
+      <div class="audio-time">
+        <span id="timeElapsed">${fmt(audioProgress)}</span>
+        <span id="timeDuration">${audioDuration?fmt(audioDuration):'--:--'}</span>
+      </div>
+    </div>
+
+    <!-- Speed control -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px">Speed</div>
+      <div class="speed-btns" role="group" aria-label="Playback speed">${speedBtns}</div>
+    </div>
   </div>
+
+  <!-- Controls -->
   <div class="ctrl-row">
-    <button class="btn btn-gr btn-sm" onclick="prevA()" ${idx===0?'disabled':''}>← Prev</button>
-    <button class="btn ${playing?'btn-re':'btn-p'}" onclick="togglePlay()" style="flex:1">
+    <button class="btn btn-g btn-sm" onclick="prevA()" ${idx===0?'disabled':''} aria-label="Previous ayah">← Prev</button>
+    <button class="play-btn${playing?' pause':''}" onclick="togglePlay()" aria-label="${playing?'Pause':'Play Ayah'}">
       ${playing?'⏸ Pause':'▶ Play Ayah'}
     </button>
-    <button class="btn btn-gr btn-sm" onclick="nextA()" ${idx===arabicAyahs.length-1?'disabled':''}>Next →</button>
+    <button class="btn btn-g btn-sm" onclick="nextA()" ${idx===arabicAyahs.length-1?'disabled':''} aria-label="Next ayah">Next →</button>
   </div>
+
   <div class="auto-row">
-    <input type="checkbox" id="apCb" ${autoPlay?'checked':''} onchange="S.autoPlay=this.checked" style="cursor:pointer">
-    <label for="apCb" style="font-size:12px;color:var(--muted);cursor:pointer">Auto-play next</label>
-    ${!mobile?`<button class="btn btn-o btn-sm" style="margin-left:auto" onclick="switchTab('check')">🎙️ Practice this ayah</button>`:''}
+    <input type="checkbox" id="apCb" ${autoPlay?'checked':''} onchange="S.autoPlay=this.checked">
+    <label for="apCb">Auto-play next ayah</label>
+    ${!mobile?`<button class="btn btn-o btn-sm" style="margin-left:auto" onclick="switchTab('check')">🎙️ Practice this</button>`:''}
   </div>
-  <div class="sec-label">All Ayahs</div>
-  <div class="mini-list">
+
+  <div class="sec" style="margin-bottom:8px">All Ayahs</div>
+  <div class="mini-list" role="list">
     ${arabicAyahs.map((a,i)=>`
-    <div class="mi${i===idx?' cur':''}" onclick="listenJump(${i})">
-      <div class="mi-n">${a.numberInSurah}</div>
-      <div class="mi-ar">${a.text.length>65?a.text.slice(0,65)+'…':a.text}</div>
-      ${i===idx&&playing?'<span style="color:var(--gold);font-size:11px;flex-shrink:0">▶</span>':''}
+    <div class="mini-li${i===idx?' cur':''}" role="listitem" tabindex="0"
+      onclick="listenJump(${i})" onkeydown="if(event.key==='Enter')listenJump(${i})"
+      aria-label="Ayah ${a.numberInSurah}${i===idx&&playing?' (playing)':''}">
+      <div class="mini-num">${a.numberInSurah}</div>
+      <div class="mini-ar" dir="rtl">${a.text.length>60?a.text.slice(0,60)+'…':a.text}</div>
+      ${i===idx&&playing?'<span style="color:var(--gold);font-size:12px" aria-hidden="true">▶</span>':''}
     </div>`).join('')}
   </div>`;
 
   g('content').innerHTML=html;
 }
 
-function listenJump(i){S.idx=i;stopAudio();renderListen();}
-function prevA(){if(S.idx>0){S.idx--;stopAudio();renderListen();}}
-function nextA(){if(S.idx<S.arabicAyahs.length-1){S.idx++;stopAudio();renderListen();}}
-function togglePlay(){if(S.playing){stopAudio();renderListen();}else{playAyah();}}
+function listenJump(i){ S.idx=i; stopAudio(); S.audioProgress=0; renderListen(); }
+function prevA(){ if(S.idx>0){ S.idx--; stopAudio(); S.audioProgress=0; renderListen(); } }
+function nextA(){ if(S.idx<S.arabicAyahs.length-1){ S.idx++; stopAudio(); S.audioProgress=0; renderListen(); } }
+function setSpeed(sp){
+  S.speed=sp; const aud=g('aud'); if(aud)aud.playbackRate=sp;
+  if(S.tab==='listen') renderListen();
+}
+function seekAudio(v){
+  const aud=g('aud'); if(aud && aud.duration){ aud.currentTime=parseFloat(v); S.audioProgress=parseFloat(v); }
+}
+function togglePlay(){
+  if(S.playing){ stopAudio(); renderListen(); }
+  else{ playAyah(); }
+}
 
-function stopAudio(){g('aud').pause();S.playing=false;}
-
+// ── AUDIO PLAYBACK ──────────────────────────────────────────
 function playAyah(){
   const cur=S.arabicAyahs[S.idx]; if(!cur)return;
   const aud=g('aud');
+  aud.playbackRate=S.speed;
   aud.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${cur.number}.mp3`;
+  aud.load();
   aud.play().catch(()=>{
-    const sn=pad3(S.surah.n),an=pad3(cur.numberInSurah);
+    // Fallback: everyayah.com
+    const sn=p3(S.surah.n), an=p3(cur.numberInSurah);
     aud.src=`https://everyayah.com/data/Alafasy_128kbps/${sn}${an}.mp3`;
-    aud.play().catch(()=>{});
+    aud.load();
+    aud.play().catch(e=>console.warn('Audio play failed:',e));
   });
-  S.playing=true; renderListen();
+  S.playing=true; S.audioDuration=0; S.audioProgress=0;
+  if(S.tab==='listen') renderListen();
+  startProgressTimer();
 }
-
+function stopAudio(){
+  const aud=g('aud'); if(aud){ aud.pause(); }
+  clearProgressTimer(); S.playing=false;
+}
+function startProgressTimer(){
+  clearProgressTimer();
+  const aud=g('aud');
+  aud.onloadedmetadata=()=>{ S.audioDuration=aud.duration; updateSeekBar(); };
+  aud.ontimeupdate=()=>{
+    S.audioProgress=aud.currentTime;
+    updateSeekBar();
+    highlightWord(aud.currentTime, aud.duration);
+  };
+}
+function clearProgressTimer(){
+  const aud=g('aud');
+  if(aud){ aud.ontimeupdate=null; aud.onloadedmetadata=null; }
+}
+function updateSeekBar(){
+  const el=g('seekBar'); if(!el)return;
+  el.max=Math.ceil(S.audioDuration)||100;
+  el.value=Math.ceil(S.audioProgress)||0;
+  const te=g('timeElapsed'), td=g('timeDuration');
+  if(te)te.textContent=fmt(S.audioProgress);
+  if(td)td.textContent=S.audioDuration?fmt(S.audioDuration):'--:--';
+}
+function highlightWord(current, duration){
+  if(!duration||!current)return;
+  const cur=S.arabicAyahs[S.idx]; if(!cur)return;
+  const words=cur.text.split(/\s+/).filter(Boolean);
+  const totalWords=words.length;
+  const frac=current/duration;
+  const wi=Math.floor(frac*totalWords);
+  // Remove all highlights
+  document.querySelectorAll('.aw.playing').forEach(el=>el.classList.remove('playing'));
+  // Highlight current word
+  const spans=document.querySelectorAll('#npText .aw');
+  if(spans[wi]) spans[wi].classList.add('playing');
+}
 function onEnd(){
-  S.playing=false;
-  if(S.autoPlay&&S.idx<S.arabicAyahs.length-1){S.idx++;setTimeout(playAyah,500);}
-  else if(S.tab==='listen'){renderListen();}
+  S.playing=false; clearProgressTimer();
+  if(S.autoPlay&&S.idx<S.arabicAyahs.length-1){
+    S.idx++; S.audioProgress=0; setTimeout(playAyah,600);
+  } else if(S.tab==='listen'){ renderListen(); }
 }
+g('aud').addEventListener('ended', onEnd);
 
-// ════════════════════════════════════════════════════════
-//  CHECK TAB
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  CHECK / PRONUNCIATION TAB
+// ════════════════════════════════════════════════════════════
 function renderCheck(){
-  const{arabicAyahs,idx,surah,recording,transcript,feedback,analyzing,lang}=S;
+  const {arabicAyahs, idx, surah, recording, transcript, feedback, analyzing, lang} = S;
   if(!arabicAyahs.length)return;
   const cur=arabicAyahs[idx];
   const tr=getTr(idx);
   const tc=trCls(lang);
   const score=feedback?feedback.score:undefined;
-  let sc='var(--g1)',sb='var(--g3)';
-  if(score!==undefined){if(score<60){sc='var(--red)';sb='var(--redl)';}else if(score<80){sc='var(--amber)';sb='var(--amberl)';}}
+  let sc='var(--g1)', sb='var(--g3)', tc2='var(--g1)';
+  if(score!==undefined){
+    if(score<60){ sc='var(--red)'; sb='var(--red-l)'; tc2='var(--red)'; }
+    else if(score<80){ sc='var(--amber)'; sb='var(--amber-l)'; tc2='var(--amber)'; }
+  }
 
-  let html=`<div class="sel-row">
-    <label style="font-size:12px;color:var(--muted)">Ayah:</label>
-    <select onchange="S.idx=parseInt(this.value);S.transcript='';S.feedback=null;renderCheck()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif">
+  let html=`
+  <!-- Ayah Selector -->
+  <div class="sel-row" role="group" aria-label="Select ayah to practice">
+    <label for="ayahSel" style="font-size:12px;color:var(--muted)">Ayah:</label>
+    <select id="ayahSel" onchange="checkJump(parseInt(this.value))" aria-label="Select ayah">
       ${arabicAyahs.map((a,i)=>`<option value="${i}"${i===idx?' selected':''}>Ayah ${a.numberInSurah}</option>`).join('')}
     </select>
-    <button class="btn btn-o btn-sm" onclick="playAyahCheck()">🎧 Listen</button>
-    <button class="btn btn-gr btn-sm" onclick="prevC()" ${idx===0?'disabled':''}>←</button>
-    <button class="btn btn-gr btn-sm" onclick="nextC()" ${idx===arabicAyahs.length-1?'disabled':''}>→</button>
+    <button class="btn btn-o btn-sm" onclick="playCheckAudio()" aria-label="Listen to this ayah">🎧 Listen</button>
+    <button class="btn btn-g btn-sm" onclick="prevC()" ${idx===0?'disabled':''} aria-label="Previous ayah">←</button>
+    <button class="btn btn-g btn-sm" onclick="nextC()" ${idx===arabicAyahs.length-1?'disabled':''} aria-label="Next ayah">→</button>
   </div>
 
-  <div class="orig-card">
-    <div class="sec-label" style="direction:ltr;text-align:left;margin-bottom:8px">
-      Original — Surah ${esc(surah.e)}, Ayah ${cur.numberInSurah}
+  <!-- Original Ayah -->
+  <div class="orig-card" aria-label="Original Ayah ${cur.numberInSurah}">
+    <div class="sec" style="direction:ltr;text-align:left;margin-bottom:8px">
+      📖 Original — Surah ${esc(surah.e)}, Ayah ${cur.numberInSurah}
     </div>
-    <div class="orig-ar">${cur.text} <span style="font-size:13px;opacity:0.35">۝${cur.numberInSurah}</span></div>
-    ${tr?`<div class="orig-tr${tc}">${esc(tr)}</div>`:''}
+    <div class="orig-ar" lang="ar" dir="rtl">${esc(cur.text)}
+      <span style="font-size:13px;opacity:0.3">۝${cur.numberInSurah}</span>
+    </div>
+    ${tr?`<div class="orig-tr${tc}" lang="${langCode(S.lang)}">${esc(tr)}</div>`:''}
   </div>
 
-  <button class="rec-btn ${recording?'rec-on':'rec-idle'}" onclick="${recording?'stopRec()':'startRec()'}">
-    ${recording?`<span class="dot"></span> Stop Recording`:'🎙️ Start Recording'}
+  <!-- Record Button -->
+  <button class="rec-btn ${recording?'rec-on':'rec-idle'}"
+    onclick="${recording?'stopRec()':'startRec()'}"
+    aria-pressed="${recording}"
+    aria-label="${recording?'Stop recording':'Start recording your recitation'}">
+    ${recording?`<span class="rec-dot" aria-hidden="true"></span> Stop Recording`:'🎙️ Start Recording'}
   </button>
-  <p style="font-size:11px;color:var(--muted);text-align:center;margin:8px 0 16px">
+  <p style="font-size:11px;color:var(--muted);text-align:center;margin:8px 0 16px" aria-live="polite">
     ${recording
       ?'<span style="color:var(--red);font-weight:600">🔴 Listening… speak the ayah clearly in Arabic</span>'
-      :'Tap Listen → then Start Recording → speak the ayah in Arabic'}
+      :'Tip: Listen first → then record → speak in Arabic · Chrome recommended'}
   </p>`;
 
+  // Transcript
   if(transcript){
-    html+=`<div class="tr-box">
-      <div class="sec-label" style="margin-bottom:6px">Your Recitation (Detected)</div>
-      <div class="tr-ar">${esc(transcript)}</div>
+    html+=`<div class="transcript-box" role="region" aria-label="Detected recitation">
+      <div class="sec" style="margin-bottom:6px">Your Recitation (Detected)</div>
+      <div class="transcript-ar" lang="ar" dir="rtl">${esc(transcript)}</div>
     </div>`;
     if(!feedback){
       html+=`<div style="text-align:center;margin-bottom:16px">
-        <button class="btn btn-go btn-lg btn-full" onclick="analyzeNow()" ${analyzing?'disabled':''}>
-          ${analyzing?'🤖 Analyzing…':'🤖 Check My Pronunciation with AI'}
+        <button class="btn btn-go btn-lg btn-full" onclick="analyzeNow()" ${analyzing?'disabled':''} aria-busy="${analyzing}">
+          ${analyzing?'🤖 Analyzing with AI…':'🤖 Analyze My Pronunciation (AI)'}
         </button>
       </div>`;
     }
   }
 
+  // ── FEEDBACK ─────────────────────────────────────────────
   if(feedback&&!feedback.error){
-    html+=`<div style="background:${sb};border:1px solid ${sc};border-radius:12px;padding:14px;display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+    html+=`
+    <!-- Score Header -->
+    <div style="background:${sb};border:1px solid ${sc};border-radius:var(--radius-lg);padding:16px;display:flex;align-items:flex-start;gap:14px;margin-bottom:14px"
+      role="region" aria-label="Overall score: ${score} out of 100">
       <div class="score-ring" style="background:${sc}">
-        <span style="font-size:20px;font-weight:700;color:white;line-height:1">${score}</span>
-        <span style="font-size:9px;color:rgba(255,255,255,0.7)">/100</span>
+        <span style="font-size:22px;font-weight:700;color:white;line-height:1">${score}</span>
+        <span style="font-size:9px;color:rgba(255,255,255,0.65)">/100</span>
       </div>
-      <div style="flex:1;min-width:0">
-        <p style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${esc(feedback.overall||'')}</p>
+      <div>
+        <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">${esc(feedback.overall||'')}</p>
         <p style="font-size:12px;color:var(--muted);font-style:italic">${esc(feedback.encouragement||'')}</p>
       </div>
-    </div>`;
+    </div>
 
-    if(feedback.mistakes&&feedback.mistakes.length){
-      html+=`<div class="card" style="margin-bottom:12px">
-        <div class="sec-label" style="color:var(--red);margin-bottom:10px">❌ Mistakes (${feedback.mistakes.length})</div>
-        ${feedback.mistakes.map(m=>`<div class="mistake-item">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap">
-            <span class="badge r">${esc(m.type||'Error')}</span>
-            ${m.word?`<span style="font-family:'Amiri',serif;font-size:16px;direction:rtl">${esc(m.word)}</span>`:''}
+    <!-- 4-Level Feedback Accordion -->`;
+
+    const levels=[
+      {key:'level1', icon:'👄', label:'Level 1 — Letter Pronunciation (Makharij)', color:feedback?.level1?.score},
+      {key:'level2', icon:'🎵', label:'Level 2 — Harakāt & Vowels', color:feedback?.level2?.score},
+      {key:'level3', icon:'📏', label:'Level 3 — Madd & Timing', color:feedback?.level3?.score},
+      {key:'level4', icon:'📚', label:'Level 4 — Tajwīd Rule Application', color:feedback?.level4?.score},
+    ];
+    levels.forEach((lv, li)=>{
+      const data=feedback[lv.key]||{};
+      const ls=data.score||0;
+      let lc='#27ae60'; if(ls<60)lc='#c0392b'; else if(ls<80)lc='#d68910';
+      html+=`
+      <div class="level-box" role="region" aria-label="${lv.label}: ${ls}/100">
+        <div class="level-hdr" id="lhdr${li}" onclick="toggleLevel(${li})" tabindex="0"
+          onkeydown="if(event.key==='Enter')toggleLevel(${li})" aria-expanded="false">
+          <span class="level-icon" aria-hidden="true">${lv.icon}</span>
+          <span class="level-title">${esc(lv.label)}</span>
+          <div class="level-score" style="background:${lc}" aria-label="Score ${ls}/100">
+            <span style="font-size:13px">${ls}</span>
           </div>
-          <p style="font-size:12px;margin-bottom:3px">${esc(m.issue||'')}</p>
-          <p style="font-size:11px;color:var(--g1);font-weight:600">✓ Fix: ${esc(m.fix||'')}</p>
-        </div>`).join('')}
+          <span class="level-chevron" aria-hidden="true">▾</span>
+        </div>
+        <div class="level-body" id="lbody${li}" role="region">
+          ${data.summary?`<p style="font-size:12px;color:var(--muted);margin:8px 0 6px">${esc(data.summary)}</p>`:''}
+          ${(data.items||[]).map(item=>`
+          <div class="level-item" ${item.word?`dir="rtl"`:''}>
+            ${item.word?`<div style="font-family:var(--font-ar);font-size:16px;margin-bottom:3px" lang="ar">${esc(item.word)}</div>`:''}
+            <strong>${esc(item.issue||'')}</strong>
+            <div class="fix">✓ Fix: ${esc(item.fix||item.correction||'')}</div>
+          </div>`).join('')}
+          ${!(data.items||[]).length?`<p style="font-size:12px;color:var(--g1);padding:6px 0">✅ No errors found in this category</p>`:''}
+        </div>
       </div>`;
-    }
+    });
 
+    // Well pronounced words
     if(feedback.correct&&feedback.correct.length){
-      html+=`<div style="padding:12px;background:var(--g3);border:1px solid var(--g4);border-radius:10px;margin-bottom:12px">
-        <div class="sec-label" style="margin-bottom:8px">✅ Well Pronounced</div>
-        <div class="correct-pills">${feedback.correct.map(w=>`<span class="cp">${esc(w)}</span>`).join('')}</div>
+      html+=`<div style="padding:12px 14px;background:var(--g3);border:1px solid var(--border2);border-radius:var(--radius-lg);margin-bottom:12px"
+        role="region" aria-label="Well pronounced words">
+        <div class="sec">✅ Well Pronounced</div>
+        <div class="correct-pills">${feedback.correct.map(w=>`<span class="cp" lang="ar">${esc(w)}</span>`).join('')}</div>
       </div>`;
     }
 
-    if(feedback.tips&&feedback.tips.length){
-      html+=`<div class="card" style="margin-bottom:12px">
-        <div class="sec-label" style="margin-bottom:8px">💡 Tips</div>
-        ${feedback.tips.map(t=>`<p style="font-size:12px;color:var(--muted);margin-bottom:5px;line-height:1.6">• ${esc(t)}</p>`).join('')}
-      </div>`;
-    }
-
-    html+=`<button class="btn btn-o btn-full" onclick="resetCheck()">🔄 Try Again</button>`;
+    html+=`<div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-o btn-full" onclick="resetCheck()" aria-label="Try recording again">🔄 Try Again</button>
+      <button class="btn btn-g btn-sm" onclick="switchTab('tajweed')" aria-label="View Tajweed coloring">🌈 Tajwīd View</button>
+    </div>`;
   }
 
   if(feedback&&feedback.error){
-    html+=`<div class="err-box">
-      <p>⚠️ Analysis failed. Check connection.</p>
-      <button class="btn btn-p" onclick="analyzeNow()">Retry</button>
+    html+=`<div class="err-box" role="alert">
+      <p>⚠️ Analysis failed. Please check your connection.</p>
+      <button class="btn btn-p" onclick="analyzeNow()">↺ Retry</button>
     </div>`;
   }
 
   g('content').innerHTML=html;
 }
 
-function prevC(){if(S.idx>0){S.idx--;S.transcript='';S.feedback=null;renderCheck();}}
-function nextC(){if(S.idx<S.arabicAyahs.length-1){S.idx++;S.transcript='';S.feedback=null;renderCheck();}}
-function resetCheck(){S.transcript='';S.feedback=null;renderCheck();}
+function toggleLevel(i){
+  const hdr=g(`lhdr${i}`), body=g(`lbody${i}`);
+  if(!hdr||!body)return;
+  const open=body.classList.contains('show');
+  body.classList.toggle('show',!open);
+  hdr.classList.toggle('open',!open);
+  hdr.setAttribute('aria-expanded',!open);
+}
 
-function playAyahCheck(){
+function prevC(){ if(S.idx>0){ S.idx--;S.transcript='';S.feedback=null;renderCheck(); } }
+function nextC(){ if(S.idx<S.arabicAyahs.length-1){ S.idx++;S.transcript='';S.feedback=null;renderCheck(); } }
+function checkJump(i){ S.idx=i;S.transcript='';S.feedback=null;renderCheck(); }
+function resetCheck(){ S.transcript='';S.feedback=null;renderCheck(); }
+function playCheckAudio(){
   const cur=S.arabicAyahs[S.idx]; if(!cur)return;
   const aud=g('aud');
+  aud.playbackRate=1.0;
   aud.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${cur.number}.mp3`;
-  aud.play().catch(()=>{
-    const sn=pad3(S.surah.n),an=pad3(cur.numberInSurah);
+  aud.load(); aud.play().catch(()=>{
+    const sn=p3(S.surah.n),an=p3(cur.numberInSurah);
     aud.src=`https://everyayah.com/data/Alafasy_128kbps/${sn}${an}.mp3`;
-    aud.play().catch(()=>{});
+    aud.load(); aud.play().catch(()=>{});
   });
 }
 
+// ── RECORDING ────────────────────────────────────────────────
 function startRec(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Speech recognition requires Google Chrome.\nPlease open this page in Chrome.');return;}
+  if(!SR){
+    alert('Speech recognition requires Google Chrome or Microsoft Edge.\nPlease open this page in one of these browsers for best results.');
+    return;
+  }
   const r=new SR();
-  r.lang='ar-SA';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
-  r.onresult=e=>{S.transcript=e.results[0][0].transcript;S.recording=false;S.feedback=null;renderCheck();};
-  r.onerror=e=>{console.error(e.error);S.recording=false;renderCheck();};
-  r.onend=()=>{S.recording=false;};
-  S.recog=r;r.start();
-  S.recording=true;S.transcript='';S.feedback=null;renderCheck();
+  r.lang='ar-SA'; r.continuous=false; r.interimResults=false; r.maxAlternatives=1;
+  r.onresult=e=>{
+    S.transcript=e.results[0][0].transcript;
+    S.recording=false; S.feedback=null; renderCheck();
+  };
+  r.onerror=e=>{ console.warn('SpeechRecognition error:',e.error); S.recording=false; renderCheck(); };
+  r.onend=()=>{ S.recording=false; };
+  S.recog=r; r.start();
+  S.recording=true; S.transcript=''; S.feedback=null; renderCheck();
 }
 function stopRec(){
-  try{if(S.recog)S.recog.stop();}catch(e){}
-  S.recording=false;renderCheck();
+  try{ if(S.recog)S.recog.stop(); }catch(e){}
+  S.recording=false; renderCheck();
+}
+function cleanupRecording(){
+  try{ if(S.recog)S.recog.stop(); }catch(e){}
+  S.recog=null; S.recording=false;
 }
 
-// ════════════════════════════════════════════════════════
-//  AI ANALYSIS
-// ════════════════════════════════════════════════════════
+// ── AI ANALYSIS ──────────────────────────────────────────────
 async function analyzeNow(){
-  const{transcript,arabicAyahs,idx,surah}=S;
+  const {transcript, arabicAyahs, idx, surah} = S;
   if(!transcript||!arabicAyahs[idx])return;
-  S.analyzing=true;S.feedback=null;renderCheck();
+  S.analyzing=true; S.feedback=null; renderCheck();
   const cur=arabicAyahs[idx];
   const tr=getTr(idx);
   try{
@@ -988,38 +1553,147 @@ async function analyzeNow(){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1200,
-        messages:[{role:'user',content:`You are an expert Quran Tajweed teacher. Analyze this student's pronunciation.
+        model:'claude-sonnet-4-20250514', max_tokens:1600,
+        messages:[{role:'user',content:`You are a professional Qurʾān Tajwīd teacher with expertise in Arabic phonetics. Analyze this student's recitation carefully.
 
-Surah: ${surah.e} (${surah.n}), Ayah ${cur.numberInSurah}
-Original: ${cur.text}
-${tr?`Meaning: ${tr}`:''}
+SURAH: ${surah.e} (${surah.n}), AYAH: ${cur.numberInSurah}
+ORIGINAL ARABIC: ${cur.text}
+${tr?`MEANING: ${tr}`:''}
 
-Student recited (via Arabic speech recognition): ${transcript}
+STUDENT RECITED (via Arabic speech recognition): ${transcript}
 
-Return ONLY valid JSON, no markdown:
-{"score":<0-100>,"overall":"<1-2 sentences>","mistakes":[{"type":"<Makharij|Madd|Shaddah|Ghunnah|Ikhfa|Idgham|Qalqalah|Missing word|Wrong word>","word":"<Arabic>","issue":"<what went wrong>","fix":"<how to correct>"}],"correct":["<Arabic words ok>"],"tips":["<tip1>","<tip2>"],"encouragement":"<warm message>"}`}]
+Provide a detailed 4-level Tajwīd analysis. Return ONLY a valid JSON object with NO markdown or code fences:
+
+{
+  "score": <0-100 overall>,
+  "overall": "<1-2 sentence overall assessment>",
+  "level1": {
+    "score": <0-100>,
+    "summary": "<brief summary of letter pronunciation>",
+    "items": [{"word":"<Arabic word>","issue":"<Makharij error>","fix":"<exact correction>"}]
+  },
+  "level2": {
+    "score": <0-100>,
+    "summary": "<brief summary of harakat/vowels>",
+    "items": [{"word":"<Arabic word>","issue":"<vowel/harakah error>","fix":"<correction>"}]
+  },
+  "level3": {
+    "score": <0-100>,
+    "summary": "<brief summary of madd and timing>",
+    "items": [{"word":"<Arabic word>","issue":"<madd/timing error>","fix":"<correction>"}]
+  },
+  "level4": {
+    "score": <0-100>,
+    "summary": "<brief summary of Tajwīd rules>",
+    "items": [{"word":"<Arabic word>","issue":"<Tajwīd rule violation: Ghunnah/Ikhfa/Idgham/Qalqalah/etc>","fix":"<correction>"}]
+  },
+  "correct": ["<well-pronounced Arabic words>"],
+  "encouragement": "<warm encouraging message>"
+}`}]
       })
     });
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
-    const raw=(d.content?.[0]?.text||'').trim().replace(/^```(?:json)?/,'').replace(/```$/,'').trim();
+    const raw=(d.content?.[0]?.text||'').trim().replace(/^```(?:json)?[\r\n]*/,'').replace(/[\r\n]*```$/,'').trim();
     S.feedback=JSON.parse(raw);
-  }catch(e){console.error(e);S.feedback={error:true};}
-  S.analyzing=false;renderCheck();
+  }catch(e){
+    console.error('AI analysis error:',e);
+    S.feedback={error:true};
+  }
+  S.analyzing=false; renderCheck();
 }
 
-// ════════════════════════════════════════════════════════
-//  RESIZE HANDLER
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  TAJWEED TAB
+// ════════════════════════════════════════════════════════════
+function renderTajweedTab(){
+  const {arabicAyahs, surah} = S;
+  if(!arabicAyahs.length)return;
+  const hasTr=S.trAyahs.length>0;
+  const tc=trCls(S.lang);
+
+  // Legend
+  let legend=`<div class="tj-legend" role="list" aria-label="Tajweed color legend">
+    ${TJ_RULES.map(r=>`
+    <div class="tj-legend-item" role="listitem" tabindex="0"
+      aria-label="${r.name}: ${r.desc}">
+      <div class="tj-swatch" style="background:${r.color}" aria-hidden="true"></div>
+      <div>
+        <div style="font-weight:600;font-size:11px;color:var(--text)">${r.name}</div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.3">${r.desc}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+
+  // Bismillah
+  let ayahsHtml='';
+  if(surah.n!==9 && surah.n!==1){
+    ayahsHtml+=`<div class="bismillah tj-view" lang="ar" aria-label="Bismillah" tabindex="0">
+      ${wrapWords('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ', true)}
+    </div>`;
+  }
+
+  arabicAyahs.forEach((a,i)=>{
+    const tr=hasTr?getTr(i):'';
+    const arHtml=wrapWords(a.text,true);
+    ayahsHtml+=`<div class="ayah-card tj-view" id="tac${i}" tabindex="0"
+      aria-label="Ayah ${a.numberInSurah}">
+      <div class="ayah-badge" aria-hidden="true">${a.numberInSurah}</div>
+      <div class="ayah-ar" lang="ar" dir="rtl">${arHtml}
+        <span class="ayah-num-inline" aria-hidden="true">۝${a.numberInSurah}</span>
+      </div>
+      ${tr?`<div class="ayah-tr${tc}" lang="${langCode(S.lang)}">${esc(tr)}</div>`:''}
+    </div>`;
+  });
+
+  g('content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <h2 style="font-size:14px;font-weight:700;color:var(--text)">🌈 Tajwīd Color View — ${esc(surah.e)}</h2>
+      <span style="font-size:11px;color:var(--muted)">(Hover words for rule name · Educational approximation)</span>
+    </div>
+    ${legend}
+    <div style="margin-bottom:6px;padding:8px 12px;background:var(--amber-l);border:1px solid var(--border);border-radius:var(--radius-sm)">
+      <p style="font-size:11px;color:var(--amber)">📌 Note: Colors show primary detected Tajwīd pattern per word. Full Tajwīd analysis requires a trained Qurʾān teacher.</p>
+    </div>
+    ${ayahsHtml}`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  KEYBOARD NAVIGATION
+// ════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA') return;
+  if(!S.surah) return;
+  if(e.key==='ArrowRight'&&S.tab==='listen') nextA();
+  if(e.key==='ArrowLeft'&&S.tab==='listen') prevA();
+  if(e.key===' '&&S.tab==='listen'){ e.preventDefault(); togglePlay(); }
+  if(e.key==='r'&&S.tab==='check'&&!S.recording) startRec();
+  if(e.key==='s'&&S.tab==='check'&&S.recording) stopRec();
+  if(e.key==='1') switchTab('read');
+  if(e.key==='2') switchTab('listen');
+  if(e.key==='3') switchTab('check');
+  if(e.key==='4') switchTab('tajweed');
+  if(e.key==='Escape') closeSidebar();
+});
+
+// ════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ════════════════════════════════════════════════════════════
 window.addEventListener('resize',()=>{
-  // Close sidebar overlay if resizing to desktop
   if(window.innerWidth>=640){
     g('overlay').classList.remove('show');
     document.body.style.overflow='';
   }
-  if(S.arabicAyahs.length)renderContent();
+  if(S.arabicAyahs.length) renderContent();
 });
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+initTheme();
+initFont();
+// Keyboard shortcut hint in console
+console.info('⌨️ Keyboard shortcuts: 1-4 = tabs, Space = play/pause, ←→ = prev/next ayah, R = record, S = stop recording, Esc = close sidebar');
 </script>
 </body>
 </html>
