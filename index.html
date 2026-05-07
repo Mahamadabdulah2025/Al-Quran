@@ -264,6 +264,43 @@ body{
 [data-theme="dark"] .ah-tr{border-top-color:var(--bd)}
 .ah-tr-rtl{direction:rtl;text-align:right}
 
+/* Romanization / Transliteration */
+.ah-rom{
+  font-size:12px;color:var(--mu);font-style:italic;letter-spacing:.3px;
+  line-height:1.85;padding:0 24px 12px;
+  border-top:1px dashed var(--bd);padding-top:8px;margin-top:2px;
+  user-select:text;-webkit-user-select:text;
+}
+[data-theme="dark"] .ah-rom{color:var(--lt)}
+.pc-rom{font-size:12px;color:rgba(255,255,255,.5);font-style:italic;
+  letter-spacing:.3px;margin-top:6px;line-height:1.7}
+.or-rom{font-size:12px;color:var(--mu);font-style:italic;letter-spacing:.3px;
+  line-height:1.85;margin-top:6px;padding-top:6px;border-top:1px dashed var(--bd)}
+
+/* Word-by-word Comparison */
+.wcomp{margin-bottom:18px}
+.wgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.witem{
+  background:var(--surf);border:1px solid var(--bd);
+  border-radius:10px;padding:10px 12px;text-align:center;
+  min-width:86px;max-width:140px;flex:1;transition:transform .15s;
+}
+.witem.ok{background:var(--g3);border-color:var(--g1)}
+.witem.err{background:var(--redl);border-color:var(--red)}
+.witem.miss{background:var(--ambl);border-color:var(--amb)}
+.witem.extra{background:var(--blul);border-color:var(--blu)}
+.wi-ar{font-family:'Amiri',serif;font-size:19px;direction:rtl;color:var(--tx);margin-bottom:4px;line-height:1.6}
+.witem.ok .wi-ar{color:var(--g1)}
+.witem.err .wi-ar{color:var(--red)}
+.witem.miss .wi-ar{color:var(--amb)}
+.wi-badge{font-size:14px;display:block;margin-bottom:4px}
+.wi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.witem.ok .wi-label{color:var(--g1)}
+.witem.err .wi-label{color:var(--red)}
+.witem.miss .wi-label{color:var(--amb)}
+.witem.extra .wi-label{color:var(--blu)}
+.wi-issue{font-size:10px;color:var(--mu);line-height:1.3;margin-top:3px;word-break:break-word}
+
 /* ══════════════════════════════════════
    READING PROGRESS (sticky bottom)
 ══════════════════════════════════════ */
@@ -495,6 +532,7 @@ body{
     <span style="font-size:12px;color:var(--sbt);opacity:.6" aria-hidden="true">اأ</span>
     <input type="range" id="fSlider" min="16" max="40" value="22" aria-label="Arabic font size">
     <div class="tsep hide-mob"></div>
+    <button class="tg hide-mob" id="romBtn" aria-pressed="false" onclick="toggleRoman()">Aب Roman</button>
     <button class="tg hide-mob" id="tajBtn" aria-pressed="false" onclick="toggleTaj()">🌈 Tajwīd</button>
     <div class="tsep"></div>
     <button class="tg" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
@@ -665,9 +703,9 @@ const TJ=[
 //  STATE
 // ════════════════════════════════════════════════
 let S={
-  surah:null,arAyahs:[],trAyahs:[],
+  surah:null,arAyahs:[],trAyahs:[],romanAyahs:[],
   idx:0,playing:false,speed:1,
-  tab:'read',tajOn:false,
+  tab:'read',tajOn:false,romanOn:false,
   recording:false,recog:null,
   transcript:'',feedback:null,analyzing:false,
   autoPlay:false,lang:'en.sahih',
@@ -709,6 +747,8 @@ function toggleTheme(){const c=document.documentElement.getAttribute('data-theme
 
 // Tajweed
 function toggleTaj(){S.tajOn=!S.tajOn;g('tajBtn').classList.toggle('on',S.tajOn);g('tajBtn').setAttribute('aria-pressed',S.tajOn);if(S.arAyahs.length)draw();}
+// Roman transliteration
+function toggleRoman(){S.romanOn=!S.romanOn;g('romBtn').classList.toggle('on',S.romanOn);g('romBtn').setAttribute('aria-pressed',S.romanOn);if(S.arAyahs.length){if(S.romanOn&&!S.romanAyahs.length&&S.surah)fetchRoman(S.surah.n).then(draw);else draw();}}
 
 // ════════════════════════════════════════════════
 //  SIDEBAR
@@ -756,7 +796,7 @@ async function loadSurah(n){
   stopAudio(); killRec();
 
   // Reset state
-  S={...S,surah:s,arAyahs:[],trAyahs:[],idx:0,playing:false,
+  S={...S,surah:s,arAyahs:[],trAyahs:[],romanAyahs:[],idx:0,playing:false,
      transcript:'',feedback:null,recording:false,audDur:0,audPos:0};
 
   // Update sidebar
@@ -808,6 +848,9 @@ async function loadSurah(n){
       }catch(te){ console.warn('Translation fetch failed:',te); }
     }
 
+    // Fetch romanization (non-blocking, always)
+    try{ await fetchRoman(n); }catch(re){ console.warn('Roman fetch:',re); }
+
     // Render
     draw();
 
@@ -834,8 +877,14 @@ async function changeLang(){
   draw();
 }
 
+async function fetchRoman(n){
+  try{
+    const r=await fetch(`https://api.alquran.cloud/v1/surah/${n}/en.transliteration`);
+    if(r.ok){const j=await r.json();if(j&&j.code===200)S.romanAyahs=j.data&&j.data.ayahs||[];}
+  }catch(e){console.warn('Roman fetch error:',e);}
+}
+
 // ════════════════════════════════════════════════
-//  TAB MANAGEMENT
 // ════════════════════════════════════════════════
 function setTab(t){stopAudio();S.tab=t;S.playing=false;syncTabs();syncBotNav();draw();window.scrollTo({top:0,behavior:'smooth'});}
 function mTab(t){if(!S.surah)return;setTab(t);}
@@ -871,9 +920,12 @@ function draw(){
 //  HELPERS
 // ════════════════════════════════════════════════
 function tr(i){return(S.trAyahs[i]&&S.trAyahs[i].text)||'';}
+function rom(i){return(S.romanAyahs[i]&&S.romanAyahs[i].text)||'';}
 function trCls(){const l=S.lang;if(!l)return'';if(l.startsWith('ur.')||l.startsWith('fa.'))return' ah-tr-rtl';return'';}
 function lc(){return S.lang?S.lang.split('.')[0]:'';}
-
+function showRom(i){const r=rom(i);return S.romanOn&&r?`<div class="ah-rom">${esc(r)}</div>`:'';}
+function showOrRom(i){const r=rom(i);return S.romanOn&&r?`<div class="or-rom">${esc(r)}</div>`:'';}
+function showPcRom(i){const r=rom(i);return S.romanOn&&r?`<div class="pc-rom">${esc(r)}</div>`:''}
 // Tajweed word analysis
 const SUN=new Set([...'تثدذرزسشصضطظلن']);
 const QALQ=new Set([...'قطبجد']);
@@ -936,6 +988,7 @@ function drawRead(){
         </div>
       </div>
       <div class="ah-ar" lang="ar" dir="rtl">${arHtml}<span class="ah-marker">۝${a.numberInSurah}</span></div>
+      ${showRom(i)}
       ${t?`<div class="ah-tr${tc}" lang="${lc()}">${esc(t)}</div>`:''}
     </div>`;
   });
@@ -1001,7 +1054,8 @@ function drawListen(){
       <span style="font-size:13px;opacity:.3;margin-right:4px">۝${cur.numberInSurah}</span>
     </div>
     ${t?`<div class="pc-tr${tc}">${esc(t)}</div>`:''}
-    <input type="range" class="seek" id="seekBar" min="0"
+    ${showPcRom(idx)}
+    <input
       max="${Math.ceil(audDur)||100}" value="${Math.ceil(audPos)||0}"
       oninput="seekTo(this.value)" aria-label="Audio position">
     <div class="atimes">
@@ -1116,6 +1170,7 @@ function drawCheck(){
   <div class="ocard">
     <div class="sec" style="direction:ltr;text-align:left;margin-bottom:8px">📖 Original — ${esc(surah.e)}, Ayah ${cur.numberInSurah}</div>
     <div class="oar" lang="ar">${esc(cur.text)} <span style="font-size:13px;opacity:.3">۝${cur.numberInSurah}</span></div>
+    ${showOrRom(idx)}
     ${t?`<div class="otr" lang="${lc()}">${esc(t)}</div>`:''}
   </div>
 
@@ -1152,8 +1207,35 @@ function drawCheck(){
       <div>
         <p style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">${esc(feedback.overall||'')}</p>
         <p style="font-size:12px;color:var(--mu);font-style:italic">${esc(feedback.encouragement||'')}</p>
+        ${feedback.improvement?`<p style="font-size:12px;color:var(--g1);margin-top:6px;font-weight:600">💡 ${esc(feedback.improvement)}</p>`:''}
       </div>
     </div>`;
+
+    // Word-by-word comparison grid
+    if(feedback.wordAnalysis&&feedback.wordAnalysis.length){
+      const statusMap={correct:{badge:'✅',cls:'ok',label:'Correct'},error:{badge:'❌',cls:'err',label:'Error'},missing:{badge:'⚠️',cls:'miss',label:'Missing'},extra:{badge:'➕',cls:'extra',label:'Extra'}};
+      html+=`<div class="wcomp">
+        <div class="sec">📊 Word-by-Word Analysis</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;font-size:11px">
+          <span style="color:var(--g1)">✅ Correct: ${feedback.wordAnalysis.filter(w=>w.status==='correct').length}</span>
+          <span style="color:var(--red)">❌ Errors: ${feedback.wordAnalysis.filter(w=>w.status==='error').length}</span>
+          <span style="color:var(--amb)">⚠️ Missing: ${feedback.wordAnalysis.filter(w=>w.status==='missing').length}</span>
+          ${feedback.wordAnalysis.filter(w=>w.status==='extra').length?`<span style="color:var(--blu)">➕ Extra: ${feedback.wordAnalysis.filter(w=>w.status==='extra').length}</span>`:''}
+        </div>
+        <div class="wgrid">
+          ${feedback.wordAnalysis.map(w=>{
+            const st=statusMap[w.status]||statusMap.error;
+            return`<div class="witem ${st.cls}" title="${esc(w.issue||'Correct')}">
+              <div class="wi-ar">${esc(w.word||'—')}</div>
+              <span class="wi-badge">${st.badge}</span>
+              <div class="wi-label">${st.label}</div>
+              ${w.studentSaid&&w.studentSaid!==w.word?`<div class="wi-issue">Said: ${esc(w.studentSaid)}</div>`:''}
+              ${w.issue?`<div class="wi-issue">${esc(w.issue.slice(0,60))}</div>`:''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
 
     [
       {k:'level1',ico:'👄',lab:'Level 1 — Letter Pronunciation (Makharij)'},
@@ -1196,8 +1278,11 @@ function drawCheck(){
     </div>`;
   }
   if(feedback?.error){
-    html+=`<div class="ebox" role="alert"><p>⚠️ Analysis failed. Check connection.</p>
-      <button class="btn bp" onclick="analyze()">↺ Retry</button></div>`;
+    html+=`<div class="ebox" role="alert">
+      <p>⚠️ AI Analysis failed.</p>
+      <small>${feedback.msg?esc(feedback.msg):'Check your internet connection and try again.'}</small>
+      <button class="btn bp" onclick="analyze()">↺ Retry Analysis</button>
+    </div>`;
   }
   g('content').innerHTML=html;
 }
@@ -1239,58 +1324,122 @@ function startRec(){
 function stopRec(){try{if(S.recog)S.recog.stop();}catch(e){}S.recording=false;drawCheck();}
 function killRec(){try{if(S.recog)S.recog.stop();}catch(e){}S.recog=null;S.recording=false;}
 
-// ── AI Analysis ────────────────────────────────
+// ── AI Analysis — comprehensive & precise ─────────
 async function analyze(){
   const{transcript,arAyahs,idx,surah}=S;
   if(!transcript||!arAyahs[idx])return;
   S.analyzing=true;S.feedback=null;drawCheck();
-  const cur=arAyahs[idx];const t=tr(idx);
+  const cur=arAyahs[idx];
+  const translation=tr(idx);
+  const romanization=rom(idx);
+
+  // Build detailed word list for comparison context
+  const origWords=cur.text.split(/\s+/).filter(Boolean);
+  const studentWords=transcript.split(/\s+/).filter(Boolean);
+
+  const prompt=`You are a world-class Qurʾān Tajwīd expert and Arabic phonetics specialist with 30+ years of teaching experience. Perform an EXTREMELY PRECISE analysis of this student's recitation, detecting EVERY error no matter how small.
+
+══ ORIGINAL AYAH ══
+Surah: ${surah.e} (No. ${surah.n}), Ayah: ${cur.numberInSurah}
+Arabic (full diacritics): ${cur.text}
+${romanization?`Romanization: ${romanization}`:''}
+${translation?`Meaning: ${translation}`:''}
+Original word count: ${origWords.length} words
+
+══ STUDENT'S RECITATION ══
+Detected text: ${transcript}
+Student word count: ${studentWords.length} words
+
+══ ANALYSIS REQUIREMENTS ══
+1. Compare EVERY WORD between the original and student recitation
+2. Detect ALL errors including the subtlest ones:
+   • Wrong letter (ص/س, ح/ه, ط/ت, ع/ء, ق/ك etc.)
+   • Wrong harakah/vowel (fathah/dammah/kasrah confusion)
+   • Missing or wrong sukūn (ْ)
+   • Missing or wrong shaddah/tashdeed (ّ)
+   • Wrong tanwīn (تنوين)
+   • Madd errors: natural=2 counts, wājib=4-5 counts, jāʾiz=2/4/6 counts
+   • Missing Ghunnah (2 counts nasalization for ن/م with shaddah)
+   • Ikhfāʾ not applied (ن/tanwīn before 15 letters)
+   • Idghām error (ن/tanwīn before ي/ن/م/و/ل/ر)
+   • Iqlāb missing (ن/tanwīn before ب → meem sound)
+   • Iẓhār not clear (ن/tanwīn before throat letters: ء/ه/ع/ح/غ/خ)
+   • Qalqalah echo missing (ق/ط/ب/ج/د with sukūn)
+   • Lām Shamsiyyah/Qamariyyah error
+   • Mīm Sākinah rules not applied
+   • Missing words, extra words, or word order errors
+   • Hamzah (ء/أ) vs soft Alef errors
+   • Heavy vs light letters (مفخم vs مرقق)
+3. Score STRICTLY: 100 = perfect, deduct for every single error
+4. For each error: identify the EXACT word, EXACTLY what was wrong, and the EXACT correction technique with mouth/tongue position if relevant
+
+Return ONLY a JSON object. NO markdown. NO extra text. NO code fences. Start directly with {:
+{
+  "score": <strict 0-100 integer>,
+  "overall": "<2-3 sentence precise assessment mentioning specific strengths and weaknesses>",
+  "wordAnalysis": [
+    {
+      "word": "<exact Arabic word from original>",
+      "status": "correct|error|missing|extra",
+      "studentSaid": "<what student said, or null if missing>",
+      "issue": "<if error: exact mistake description>",
+      "fix": "<if error: specific correction technique>"
+    }
+  ],
+  "level1": {
+    "score": <0-100>,
+    "summary": "<Makharij al-Ḥurūf assessment — which letters were clear vs unclear>",
+    "items": [
+      {"word":"<Arabic word>","issue":"<exact letter and how it was mispronounced>","fix":"<tongue/lip/throat position for correction>"}
+    ]
+  },
+  "level2": {
+    "score": <0-100>,
+    "summary": "<Harakāt & tashkeel assessment — vowel accuracy>",
+    "items": [
+      {"word":"<Arabic word>","issue":"<which vowel was wrong and how, e.g. fathah read as dammah>","fix":"<exact correction>"}
+    ]
+  },
+  "level3": {
+    "score": <0-100>,
+    "summary": "<Madd, sukūn & timing assessment — elongation and pause accuracy>",
+    "items": [
+      {"word":"<Arabic word>","issue":"<madd type and actual vs required length, e.g. madd wājib should be 4-5 counts but only 2 given>","fix":"<correction with exact count>"}
+    ]
+  },
+  "level4": {
+    "score": <0-100>,
+    "summary": "<Tajwīd rules assessment — which rules were applied vs missed>",
+    "items": [
+      {"word":"<Arabic word>","issue":"<rule name + exact violation, e.g. Ikhfāʾ for ن before ت not applied>","fix":"<how to correctly apply this rule>"}
+    ]
+  },
+  "correct": ["<Arabic words recited correctly — only include genuinely correct words>"],
+  "improvement": "<one specific, actionable practice tip for this student>",
+  "encouragement": "<warm, specific encouragement acknowledging their effort>"
+}`;
+
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1800,
-        messages:[{role:'user',content:`You are a professional Qurʾān Tajwīd teacher. Analyze this student's recitation.
-
-SURAH: ${surah.e} (${surah.n}), AYAH: ${cur.numberInSurah}
-ORIGINAL ARABIC: ${cur.text}
-${t?`MEANING: ${t}`:''}
-STUDENT RECITED (Arabic speech recognition): ${transcript}
-
-Return ONLY valid JSON with NO markdown fences, NO extra text:
-{
-  "score": <0-100>,
-  "overall": "<1-2 sentence overall assessment>",
-  "level1": {
-    "score": <0-100>,
-    "summary": "<Makharij/letter articulation summary>",
-    "items": [{"word":"<Arabic>","issue":"<error>","fix":"<technique>"}]
-  },
-  "level2": {
-    "score": <0-100>,
-    "summary": "<Harakāt/vowel summary>",
-    "items": [{"word":"<Arabic>","issue":"<error>","fix":"<correction>"}]
-  },
-  "level3": {
-    "score": <0-100>,
-    "summary": "<Madd & timing summary>",
-    "items": [{"word":"<Arabic>","issue":"<error>","fix":"<correction>"}]
-  },
-  "level4": {
-    "score": <0-100>,
-    "summary": "<Tajwīd rules summary>",
-    "items": [{"word":"<Arabic>","issue":"<rule violation>","fix":"<correction>"}]
-  },
-  "correct": ["<well-pronounced Arabic words>"],
-  "encouragement": "<warm motivating message>"
-}`}]
+        model:'claude-sonnet-4-20250514',max_tokens:2400,
+        messages:[{role:'user',content:prompt}]
       })
     });
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const d=await res.json();
-    const raw=(d.content?.[0]?.text||'').trim().replace(/^```(?:json)?[\r\n]*/,'').replace(/[\r\n]*```$/,'').trim();
+    let raw=(d.content?.[0]?.text||'').trim();
+    // Strip any markdown code fences
+    raw=raw.replace(/^```(?:json)?[\r\n]*/,'').replace(/[\r\n]*```$/,'').trim();
+    // Find first { in case of any prefix text
+    const firstBrace=raw.indexOf('{');
+    if(firstBrace>0)raw=raw.slice(firstBrace);
     S.feedback=JSON.parse(raw);
-  }catch(e){console.error('AI error:',e);S.feedback={error:true};}
+  }catch(e){
+    console.error('AI analysis error:',e);
+    S.feedback={error:true,msg:e.message};
+  }
   S.analyzing=false;drawCheck();
 }
 
@@ -1317,6 +1466,7 @@ function drawTajweed(){
         <span class="ah-label">${surah.e} ${a.numberInSurah}</span>
       </div>
       <div class="ah-ar" lang="ar" dir="rtl">${wrapWords(a.text,true)}<span class="ah-marker">۝${a.numberInSurah}</span></div>
+      ${showRom(i)}
       ${t?`<div class="ah-tr${tc}" lang="${lc()}">${esc(t)}</div>`:''}
     </div>`;
   });
