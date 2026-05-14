@@ -302,6 +302,62 @@ body{
 .wi-issue{font-size:10px;color:var(--mu);line-height:1.3;margin-top:3px;word-break:break-word}
 
 /* ══════════════════════════════════════
+   MOBILE OPTIONS BAR (Roman + Tajweed)
+   Only shown on mobile below tab bar
+══════════════════════════════════════ */
+#mobileOpts{
+  display:none;
+  padding:8px 14px;
+  background:var(--surf);
+  border-bottom:1px solid var(--bd);
+  align-items:center;gap:6px;flex-wrap:wrap;
+  position:sticky;top:calc(var(--th) + 56px);z-index:699;
+}
+.mob-lbl{font-size:10px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+/* ══════════════════════════════════════
+   QURAN.COM TAJWEED API — official colors
+══════════════════════════════════════ */
+/* These classes come from the Quran.com API word HTML */
+.ham_wasl{color:#AAAAAA!important}
+.slnt{color:#AAAAAA!important}
+.madda_normal{color:#537FFF!important}
+.madda_permissible{color:#4050FF!important}
+.madda_necessary{color:#000EBC!important}
+.madda_obligatory{color:#2144C1!important}
+.qalaqah{color:#DD5D0B!important}
+.ikhfa_shafawi{color:#D500B7!important}
+.idgham_shafawi{color:#D500B7!important}
+.ghunnah{color:#619A00!important}
+.ikhfa{color:#AC64AC!important}
+.idgham_with_ghunnah{color:#169200!important}
+.idgham_without_ghunnah{color:#169200!important}
+.iqlab{color:#26BFFD!important}
+.shaddah{color:#021799!important}
+.lam_shamsiyya{color:#D0A500!important}
+.tajweed{transition:all .1s}
+/* Dark mode adjustments for Tajweed colors */
+[data-theme="dark"] .ham_wasl,[data-theme="dark"] .slnt{color:#888!important}
+[data-theme="dark"] .madda_normal{color:#6B8FFF!important}
+[data-theme="dark"] .qalaqah{color:#FF8C40!important}
+[data-theme="dark"] .lam_shamsiyya{color:#F0C000!important}
+[data-theme="dark"] .ghunnah{color:#80CC20!important}
+[data-theme="dark"] .ikhfa{color:#CC88CC!important}
+[data-theme="dark"] .idgham_with_ghunnah,[data-theme="dark"] .idgham_without_ghunnah{color:#40C040!important}
+/* Tajweed API loading state */
+.tj-loading{text-align:center;padding:20px;color:var(--mu);font-size:12px}
+
+/* Manual transcript input */
+.manual-inp{
+  width:100%;font-family:'Amiri',serif;font-size:18px;direction:rtl;
+  text-align:right;padding:10px 14px;border:1px solid var(--bd);
+  border-radius:8px;background:var(--surf);color:var(--tx);
+  margin-top:8px;resize:vertical;min-height:60px;
+  line-height:1.8;
+}
+.manual-inp:focus{outline:none;border-color:var(--g1)}
+
+/* ══════════════════════════════════════
    READING PROGRESS (sticky bottom)
 ══════════════════════════════════════ */
 .rpbar-wrap{
@@ -506,6 +562,9 @@ body{
   .ah-tr{padding:0 16px 14px}
   .bismillah{font-size:calc(var(--ar) + 2px);padding:14px 16px}
 
+  /* Show mobile options bar */
+  #mobileOpts{display:flex}
+
   /* Listen */
   .pcrd{padding:16px}
   .pc-ar{font-size:calc(var(--ar) - 2px)}
@@ -603,6 +662,18 @@ body{
       <button class="tb" id="tbCheck" onclick="setTab('check')" role="tab">🎙️ Check</button>
       <button class="tb" id="tbTajweed" onclick="setTab('tajweed')" role="tab">🌈 Tajwīd</button>
     </nav>
+    <!-- Mobile-only options bar (Roman + Tajweed + font) -->
+    <div id="mobileOpts" role="toolbar" aria-label="Display options">
+      <span class="mob-lbl">Options:</span>
+      <button class="tg" id="romBtnM" onclick="toggleRoman()" aria-pressed="false">Aب Roman</button>
+      <button class="tg" id="tajBtnM" onclick="toggleTaj()" aria-pressed="false">🌈 Tajwīd</button>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
+        <span style="font-size:12px;color:var(--mu)" aria-hidden="true">اأ</span>
+        <input type="range" id="fSliderM" min="16" max="40" value="22"
+          aria-label="Font size"
+          oninput="setFont(this.value);g('fSlider').value=this.value">
+      </div>
+    </div>
     <div id="content"></div>
   </div>
 
@@ -703,7 +774,7 @@ const TJ=[
 //  STATE
 // ════════════════════════════════════════════════
 let S={
-  surah:null,arAyahs:[],trAyahs:[],romanAyahs:[],
+  surah:null,arAyahs:[],trAyahs:[],romanAyahs:[],tajweedApiData:{},
   idx:0,playing:false,speed:1,
   tab:'read',tajOn:false,romanOn:false,
   recording:false,recog:null,
